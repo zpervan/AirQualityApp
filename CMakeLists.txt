@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.13)
 project(AirQualityApp)
 
+# Define C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(AirQualityApp main.cpp)
+# Add needed subfolders
+add_subdirectory(Utility)
+
+# Compiling the Executable
+add_executable(AirQualityApp runner.cpp)
+
+# Linking needed libraries with the main executable
+target_link_libraries(AirQualityApp PRIVATE DataScraper)
