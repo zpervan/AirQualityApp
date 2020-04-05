@@ -2,9 +2,12 @@
 // Project: Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-// TODO: JSON parser
 // TODO: Epoch converter
 // TODO: Visualization
+// TODO: Linear regression
+// TODO: Installation script
+// TODO: RunAllTests script
+// TODO: out-of-source build check RoutePlanning project
 
 #include "Utility/DataScraper/data_scraper.h"
 

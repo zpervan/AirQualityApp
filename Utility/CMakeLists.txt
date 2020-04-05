@@ -6,13 +6,19 @@ add_library(DataScraper
         DataScraper/data_scraper.cpp
         )
 
+add_library(JsonParser
+        STATIC
+        JsonParser/json_parser.cpp
+        JsonParser/json_parser.h
+        DataTypes/data_types.h
+        )
+
 target_link_libraries(DataScraper
         PRIVATE
         curl
         )
 
 ###### TESTING ######
-
 add_subdirectory(ThirdParty/GoogleTest)
 
 enable_testing()
@@ -22,13 +28,25 @@ add_executable(DataScraperTest
         DataScraper/Test/data_scraper_test.cpp
         )
 
-# Link needed libraries
-target_link_libraries(DataScraperTest
-        DataScraper
-        gtest
-        gtest_main
+add_executable(JsonParserTest
+        JsonParser/Test/json_parser_test.cpp
         )
 
+# Link libraries needed for testing
+set(GTest_Libs gtest gtest_main)
+
+target_link_libraries(DataScraperTest
+        DataScraper
+        ${GTest_Libs}
+        )
+
+target_link_libraries(JsonParserTest
+        JsonParser
+        ${GTest_Libs}
+        )
+
+# Creates a named test suite for given tests
 add_test(TestAll
         DataScraperTest
+        JsonParserTest
         )
