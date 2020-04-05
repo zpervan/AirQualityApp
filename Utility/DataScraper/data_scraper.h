@@ -2,17 +2,20 @@
 // Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-// TODO: Add doxygen
-// TODO: Add tests
+/******************************************************************************/
+/**  Documentation: https://curl.haxx.se/libcurl/c/libcurl-tutorial.html     **/
+/******************************************************************************/
 
 #ifndef AIRQUALITYAPP_DATA_SCRAPER_H
 #define AIRQUALITYAPP_DATA_SCRAPER_H
 
+#include <curl/curl.h>
+
 #include <string>
 
+/// @brief Fetches data from the given URL
 class DataScraper {
 public:
-  /// @brief
   DataScraper() = default;
   ~DataScraper() = default;
 
@@ -23,16 +26,25 @@ public:
   DataScraper(DataScraper &&data_scraper) = delete;
   DataScraper &operator=(DataScraper &&data_scraper) = delete;
 
-  /// @section
-  void FetchAirQualityData();
+  /// @section Various method for fetching data
+
+  /// @brief Collects the data from an given URL (website)
+  void FetchData();
 
   /// @section Setter and Getter methods
   const std::string &GetUrl() const;
+  const std::string &GetFetchedData() const;
+
   void SetUrl(const std::string &url);
 
 private:
-  static std::size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+  void ReadDataFromUrl();
+  static std::size_t WriteCallback(void *contents, size_t size, size_t nmemb,
+                                   void *userp);
+  CURL *curl_{nullptr};
+  CURLcode res_;
   std::string url_{""};
+  std::string fetched_data_{""};
 };
 
 #endif // AIRQUALITYAPP_DATA_SCRAPER_H

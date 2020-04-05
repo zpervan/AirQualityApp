@@ -4,30 +4,34 @@
 
 #include "data_scraper.h"
 
-#include <curl/curl.h>
 #include <iostream>
 
-void DataScraper::FetchAirQualityData() {
-  CURL *curl;
-  CURLcode res;
-  std::string readBuffer;
+void DataScraper::FetchData() {
+  curl_ = curl_easy_init();
 
-  curl = curl_easy_init();
-  if (curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, url_.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    res = curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
+  if (curl_) {
+    ReadDataFromUrl();
 
-    std::cout << readBuffer << std::endl;
+    if (fetched_data_.empty()) {
+      fetched_data_ = "No valid data found";
+    }
   }
+}
+
+void DataScraper::ReadDataFromUrl() {
+  curl_easy_setopt(curl_, CURLOPT_URL, url_.c_str());
+  curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
+  curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &fetched_data_);
+
+  res_ = curl_easy_perform(curl_);
+  curl_easy_cleanup(curl_);
 }
 
 const std::string &DataScraper::GetUrl() const { return url_; }
 
-void DataScraper::SetUrl(const std::string &url) { url_ = url; }
+const std::string &DataScraper::GetFetchedData() const { return fetched_data_; }
 
+void DataScraper::SetUrl(const std::string &url) { url_ = url; }
 std::size_t DataScraper::WriteCallback(void *contents, size_t size,
                                        size_t nmemb, void *userp) {
   ((std::string *)userp)->append((char *)contents, size * nmemb);
