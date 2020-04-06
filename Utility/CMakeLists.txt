@@ -6,6 +6,11 @@ add_library(DataScraper
         DataScraper/data_scraper.cpp
         )
 
+target_link_libraries(DataScraper
+        PRIVATE
+        curl
+        )
+
 add_library(JsonParser
         STATIC
         JsonParser/json_parser.cpp
@@ -13,10 +18,12 @@ add_library(JsonParser
         DataTypes/data_types.h
         )
 
-target_link_libraries(DataScraper
-        PRIVATE
-        curl
+add_library(LinearRegression
+        STATIC
+        Algorithms/linear_regression.cpp
+        Algorithms/linear_regression.h
         )
+
 
 ###### TESTING ######
 add_subdirectory(ThirdParty/GoogleTest)
@@ -32,6 +39,10 @@ add_executable(JsonParserTest
         JsonParser/Test/json_parser_test.cpp
         )
 
+add_executable(LinearRegressionTest
+        Algorithms/Test/linear_regression_test.cpp
+        )
+
 # Link libraries needed for testing
 set(GTest_Libs gtest gtest_main)
 
@@ -45,8 +56,14 @@ target_link_libraries(JsonParserTest
         ${GTest_Libs}
         )
 
+target_link_libraries(LinearRegressionTest
+        LinearRegression
+        ${GTest_Libs}
+        )
+
 # Creates a named test suite for given tests
 add_test(TestAll
         DataScraperTest
         JsonParserTest
+        LinearRegressionTest
         )
