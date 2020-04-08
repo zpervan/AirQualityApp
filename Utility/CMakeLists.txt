@@ -46,6 +46,7 @@ add_executable(LinearRegressionTest
 # Link libraries needed for testing
 set(GTest_Libs gtest gtest_main)
 
+
 target_link_libraries(DataScraperTest
         DataScraper
         ${GTest_Libs}
@@ -63,6 +64,7 @@ target_link_libraries(LinearRegressionTest
 
 # Creates a named test suite for given tests
 add_test(TestAll
+        "--gtest_color=yes"
         DataScraperTest
         JsonParserTest
         LinearRegressionTest
