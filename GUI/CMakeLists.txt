@@ -1,35 +1,17 @@
-project(imgui CXX)
+cmake_minimum_required(VERSION 3.15)
 
-set(HEADERS
-        imconfig.h
-        imgui.h
-        imgui_impl_glfw.h
-        imgui_impl_opengl3.h
-        imgui_internal.h
-        imstb_rectpack.h
-        imstb_textedit.h
-        imstb_truetype.h
-        )
+project(AirQualityGui)
 
-set(SOURCES
-        imgui.cpp
-        imgui_demo.cpp
-        imgui_draw.cpp
-        imgui_impl_glfw.cpp
-        imgui_impl_opengl3.cpp
-        imgui_widgets.cpp
-        )
+add_subdirectory(DearImgui)
 
-add_library(ImGui
+add_library(AirQualityGui
         STATIC
-        ${HEADERS}
-        ${SOURCES}
+        air_quality_gui.h
+        air_quality_gui.cpp
+        Components/main_menu_bar.h
         )
 
-target_link_libraries(ImGui
+target_link_libraries(AirQualityGui
         PRIVATE
-        glfw
-        GLEW
-        GLU
-        GL
+        ImGui
         )

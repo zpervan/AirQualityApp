@@ -13,7 +13,8 @@ add_executable(AirQualityApp runner.cpp)
 
 # Linking needed libraries with the main executable
 target_link_libraries(AirQualityApp
+        PRIVATE
         DataScraper
         JsonParser
-        ImGui
+        AirQualityGui
         )
