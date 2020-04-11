@@ -9,11 +9,14 @@
 
 #include <memory>
 
-class JsonParserTestFixture : public ::testing::Test {
+class JsonParserTestFixture : protected JsonParser, public ::testing::Test {
 protected:
-  JsonParserTestFixture()
-      : default_json_parser_(std::make_unique<JsonParser>()) {}
-  ~JsonParserTestFixture() = default;
+  void CheckAirQualityMeasurementData(const AirQualityMeasurement &actual,
+                                      const AirQualityMeasurement &expected) {
+    EXPECT_EQ(actual.value, expected.value);
+    EXPECT_EQ(actual.unit_of_measurement, expected.unit_of_measurement);
+    EXPECT_EQ(actual.time, expected.time);
+  }
 
   std::unique_ptr<JsonParser> default_json_parser_;
   std::string default_fetched_data_{
@@ -21,38 +24,70 @@ protected:
 
   AirQualityMeasurement default_air_quality_measurement_data_{0.6, "mg/m3",
                                                               1585868400000};
-
-  void CheckAirQualityMeasurementData(const AirQualityMeasurement &actual,
-                                      const AirQualityMeasurement &expected) {
-    EXPECT_EQ(actual.value, expected.value);
-    EXPECT_EQ(actual.unit_of_measurement, expected.unit_of_measurement);
-    EXPECT_EQ(actual.time, expected.time);
-  }
 };
 
 TEST_F(
     JsonParserTestFixture,
-    GivenAirQualityMeasurement_WhenDataIsRead_ThenParserDataBufferIsAssigned) {
+    GivenAirQualityMeasurement_WhenDataIsRead_ThenParserDataBufferHasValue) {
 
   std::string expected_fetched_data{
       R"([{"vrijednost":0.6,"mjernaJedinica":"mg/m3","vrijeme":1585868400000}])"};
 
-  default_json_parser_->ReadData(std::move(default_fetched_data_));
+  ReadData(std::move(default_fetched_data_));
 
-  ASSERT_TRUE(!default_json_parser_->GetDataBuffer().empty());
-  EXPECT_EQ(expected_fetched_data, default_json_parser_->GetDataBuffer());
+  ASSERT_FALSE(GetDataBuffer().empty());
+  EXPECT_EQ(expected_fetched_data, GetDataBuffer());
+}
+
+TEST_F(JsonParserTestFixture,
+       GivenInvalidData_WhenDataIsParsed_ThenParsedDataIsEmpty) {
+
+  std::string invalid_data{"Th[s d4]a} i{ n0t G0.d"};
+
+  ReadData(std::move(invalid_data));
+
+  const auto actual_parsed_data = Parse();
+
+  EXPECT_FALSE(actual_parsed_data.has_value());
+}
+
+TEST_F(
+    JsonParserTestFixture,
+    GivenMultipleAirQualityMeasurement_WhenDataIsRead_ThenParserDataBufferIsAssignedWithUniqueData) {
+
+  std::vector<std::string> data{
+      {R"([{"vrijednost":0.1,"mjernaJedinica":"mg/m3-1","vrijeme":1}])"},
+      {R"([{"vrijednost":0.2,"mjernaJedinica":"mg/m3-2","vrijeme":2}])"}};
+
+  // Duplicated because the "ReadData" function actually moves the data
+  // therefore it's empty and the tests fails because it reads an empty string
+  // element
+  std::vector<std::string> expected_fetched_data{
+      {R"([{"vrijednost":0.1,"mjernaJedinica":"mg/m3-1","vrijeme":1}])"},
+      {R"([{"vrijednost":0.2,"mjernaJedinica":"mg/m3-2","vrijeme":2}])"}};
+
+  ReadData(std::move(data.at(0)));
+
+  ASSERT_FALSE(GetDataBuffer().empty());
+  EXPECT_EQ(expected_fetched_data.at(0), GetDataBuffer());
+
+  ReadData(std::move(data.at(1)));
+
+  ASSERT_FALSE(GetDataBuffer().empty());
+  EXPECT_EQ(expected_fetched_data.at(1), GetDataBuffer());
 }
 
 TEST_F(
     JsonParserTestFixture,
     GivenValidAirQualityMeasurement_WhenDataIsParsed_ThenValidMeasurementIsAssigned) {
 
-  default_json_parser_->SetDataBuffer(default_fetched_data_);
+  ReadData(std::move(default_fetched_data_));
 
-  ASSERT_TRUE(!default_json_parser_->Parse().empty());
+  const auto actual_parsed_data = Parse();
 
-  auto actual_measurements =
-      default_json_parser_->GetAirQualityMeasurements().back();
+  ASSERT_FALSE(actual_parsed_data->empty());
+
+  auto actual_measurements = GetAirQualityMeasurements().back();
 
   CheckAirQualityMeasurementData(actual_measurements,
                                  default_air_quality_measurement_data_);
@@ -64,17 +99,18 @@ TEST_F(
   std::string fetched_data{
       R"([{"vrijednost":0.1,"mjernaJedinica":"mg/m3-1","vrijeme":11111111111},{"vrijednost":0.2,"mjernaJedinica":"mg/m3-2","vrijeme":22222222222}, {"vrijednost":0.3,"mjernaJedinica":"mg/m3-3","vrijeme":33333333333}])"};
 
-  default_json_parser_->SetDataBuffer(fetched_data);
+  ReadData(std::move(fetched_data));
 
-  ASSERT_TRUE(!default_json_parser_->Parse().empty());
+  const auto actual_parsed_data = Parse();
 
-  const auto actual_measurements =
-      default_json_parser_->GetAirQualityMeasurements();
+  ASSERT_FALSE(actual_parsed_data->empty());
 
-  const std::vector<AirQualityMeasurement> expected_measurements{
+  const auto actual_measurements = GetAirQualityMeasurements();
+
+  const std::array<AirQualityMeasurement,3> expected_measurements{{
       {0.1, "mg/m3-1", 11111111111},
       {0.2, "mg/m3-2", 22222222222},
-      {0.3, "mg/m3-3", 33333333333}};
+      {0.3, "mg/m3-3", 33333333333}}};
 
   for (std::size_t i = 0; i < actual_measurements.size(); i++) {
     CheckAirQualityMeasurementData(actual_measurements.at(i),

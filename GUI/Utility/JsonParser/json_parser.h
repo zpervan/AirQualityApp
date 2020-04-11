@@ -7,35 +7,43 @@
 
 #include "../DataTypes/data_types.h"
 
+#include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
-// TODO: Add GetParsedData function?
-// TODO: Better name than JsonParser?
-// TODO: Handle faulty fetched data
 // TODO: Epoch conversion to date should be done here
 
-/// @brief Parses the fetched JSON file from the given URL and assigns the values.
+/// @brief Parses the fetched JSON file and assigns the values with the
+/// appropriate data.
+/// @attention There should be only one instance of this object!
 class JsonParser {
 public:
   JsonParser() = default;
-  void ReadData(std::string &&fetched_data);
-  std::vector<AirQualityMeasurement> Parse();
 
-  const std::string &GetDataBuffer() const;
-  const std::vector<AirQualityMeasurement> &GetAirQualityMeasurements() const;
-  void SetDataBuffer(const std::string &data_buffer);
+  /// @brief Fills JsonParser's data buffer with the fetched JSON data
+  /// @param data JSON data
+  void ReadData(std::string &&data);
+
+  /// @brief Parses the given fetched JSON data and fills the
+  /// AirQualityMeasurement data structure with appropriate data
+  /// @return Returns a valid vector of type AirQualityMeasurement
+  std::optional<std::vector<AirQualityMeasurement>> Parse();
 
 private:
-  void RemoveSpecialCharacters();
+  void RemoveRedundantCharacters();
   void ReplaceSpecialCharacters();
   void AssignAirParametersValues();
 
-  void PrintData(std::vector<AirQualityMeasurement> &data);
-
   std::vector<AirQualityMeasurement> air_quality_measurements_;
   std::string data_buffer_{""};
-  const char redundant_characters[6]{"[{}]\""};
+  std::array<char, 5> redundant_characters{{'[', '{', '}', ']', '\"'}};
+
+  /// @section For testing purposes
+protected:
+  [[nodiscard]] const std::string &GetDataBuffer() const;
+  [[nodiscard]] const std::vector<AirQualityMeasurement> &
+  GetAirQualityMeasurements() const;
 };
 
 #endif // AIRQUALITYAPP_JSON_PARSER_H

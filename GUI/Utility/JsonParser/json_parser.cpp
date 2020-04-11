@@ -9,26 +9,29 @@
 #include <iostream>
 #include <sstream>
 
-void JsonParser::ReadData(std::string &&fetched_data) {
-  data_buffer_ = std::move(fetched_data);
+void JsonParser::ReadData(std::string &&data) {
+  data_buffer_.clear();
+  data_buffer_ = std::move(data);
 }
 
-std::vector<AirQualityMeasurement> JsonParser::Parse() {
+std::optional<std::vector<AirQualityMeasurement>> JsonParser::Parse() {
+  air_quality_measurements_.resize(0);
 
-  RemoveSpecialCharacters();
+  RemoveRedundantCharacters();
   ReplaceSpecialCharacters();
   AssignAirParametersValues();
 
-  /// @attention For debug only. Will be removed
-  //  PrintData(air_quality_measurements_);
+  if (air_quality_measurements_.empty()) {
+    return std::nullopt;
+  }
 
   return air_quality_measurements_;
 }
 
-void JsonParser::RemoveSpecialCharacters() {
-  for (std::size_t i = 0; i < strlen(redundant_characters); ++i) {
+void JsonParser::RemoveRedundantCharacters() {
+  for (const char &redundant_character : redundant_characters) {
     data_buffer_.erase(std::remove(data_buffer_.begin(), data_buffer_.end(),
-                                   redundant_characters[i]),
+                                   redundant_character),
                        data_buffer_.end());
   }
 }
@@ -46,12 +49,11 @@ void JsonParser::AssignAirParametersValues() {
   AirQualityMeasurement air_quality_data;
 
   while (linestream >> key >> value) {
-    if (key == "vrijednost")
-      air_quality_data.value = std::stod(value);
-    if (key == "mjernaJedinica")
+    if (key == "vrijednost") // value
+      air_quality_data.value = std::stof(value);
+    if (key == "mjernaJedinica") // unit of measure
       air_quality_data.unit_of_measurement = value;
-    if (key == "vrijeme")
-    {
+    if (key == "vrijeme") { // time
       air_quality_data.time = std::stoll(value);
       air_quality_measurements_.emplace_back(air_quality_data);
     }
@@ -59,21 +61,8 @@ void JsonParser::AssignAirParametersValues() {
 }
 
 const std::string &JsonParser::GetDataBuffer() const { return data_buffer_; }
-void JsonParser::SetDataBuffer(const std::string &data_buffer) {
-  data_buffer_ = data_buffer;
-}
 
 const std::vector<AirQualityMeasurement> &
 JsonParser::GetAirQualityMeasurements() const {
   return air_quality_measurements_;
-}
-
-void JsonParser::PrintData(std::vector<AirQualityMeasurement> &data) {
-  std::for_each(air_quality_measurements_.begin(),
-                air_quality_measurements_.end(),
-                [](AirQualityMeasurement &data) {
-                  std::cout << data.value << std::endl;
-                  std::cout << data.unit_of_measurement << std::endl;
-                  std::cout << data.time << std::endl;
-                });
 }
