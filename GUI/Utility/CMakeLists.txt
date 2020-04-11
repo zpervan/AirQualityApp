@@ -1,5 +1,6 @@
 project(Utility)
 
+# Create libraries
 add_library(DataScraper
         STATIC
         DataScraper/data_scraper.h
@@ -26,7 +27,7 @@ add_library(LinearRegression
 
 
 ###### TESTING ######
-add_subdirectory(ThirdParty/GoogleTest)
+add_subdirectory(ThirdParty)
 
 enable_testing()
 
@@ -64,7 +65,6 @@ target_link_libraries(LinearRegressionTest
 
 # Creates a named test suite for given tests
 add_test(TestAll
-        "--gtest_color=yes"
         DataScraperTest
         JsonParserTest
         LinearRegressionTest

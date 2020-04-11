@@ -9,13 +9,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-class AirQualityGui
-{
+class AirQualityGui {
 public:
   int Run();
-
-private:
-  int Setup(GLFWwindow *window);
 };
 
 #endif // AIRQUALITYAPP_AIR_QUALITY_GUI_H

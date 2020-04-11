@@ -5,7 +5,9 @@
 #ifndef AIRQUALITYAPP_WINDOW_H
 #define AIRQUALITYAPP_WINDOW_H
 
-#include "../DearImgui/imgui.h"
+#include "../Utility/ThirdParty/DearImgui/imgui.h"
+#include "../Utility/DataScraper/data_scraper.h"
+
 #include "config.h"
 #include <algorithm>
 #include <cstdio>
@@ -61,6 +63,7 @@ void ShowHistogram() {
 
   ImGui::PlotHistogram("Histogram", values.data(), values.size(), 0, nullptr,
                        0.0f, 1.0f, ImVec2(0, 120));
+
   ImGui::End();
 }
 

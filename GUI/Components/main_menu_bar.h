@@ -5,7 +5,7 @@
 #ifndef AIRQUALITYAPP_MAIN_MENU_BAR_H
 #define AIRQUALITYAPP_MAIN_MENU_BAR_H
 
-#include "../DearImgui/imgui.h"
+#include "../Utility/ThirdParty/DearImgui/imgui.h"
 
 namespace Menu {
 static void ShowMainMenuBar() {

@@ -5,9 +5,9 @@
 
 #include "air_quality_gui.h"
 
-#include "DearImgui/imgui.h"
-#include "DearImgui/imgui_impl_glfw.h"
-#include "DearImgui/imgui_impl_opengl3.h"
+#include "Utility/ThirdParty/DearImgui/imgui.h"
+#include "Utility/ThirdParty/DearImgui/imgui_impl_glfw.h"
+#include "Utility/ThirdParty/DearImgui/imgui_impl_opengl3.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -75,7 +75,6 @@ int AirQualityGui::Run() {
     Menu::ShowMainMenuBar();
     Window::ShowWindow();
 
-
     /// MY CODE ENDS HERE
     // Render the application
     ImGui::Render();
@@ -101,5 +100,3 @@ int AirQualityGui::Run() {
 
   return 0;
 }
-
-int AirQualityGui::Setup(GLFWwindow *window) {}

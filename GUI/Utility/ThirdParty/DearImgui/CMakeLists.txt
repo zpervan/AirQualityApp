@@ -1,5 +1,6 @@
-project(imgui CXX)
+project(DearImGui CXX)
 
+# Specify header files
 set(HEADERS
         imconfig.h
         imgui.h
@@ -11,6 +12,7 @@ set(HEADERS
         imstb_truetype.h
         )
 
+# Specify source files
 set(SOURCES
         imgui.cpp
         imgui_demo.cpp
@@ -20,13 +22,15 @@ set(SOURCES
         imgui_widgets.cpp
         )
 
-add_library(ImGui
+# Create a library
+add_library(DearImGui
         STATIC
         ${HEADERS}
         ${SOURCES}
         )
 
-target_link_libraries(ImGui
+# In order to work with DearImGui, link it with graphics libraries
+target_link_libraries(DearImGui
         PRIVATE
         glfw
         GLEW

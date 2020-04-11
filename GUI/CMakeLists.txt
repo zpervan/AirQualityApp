@@ -1,9 +1,6 @@
-cmake_minimum_required(VERSION 3.15)
-
 project(AirQualityGui)
 
-add_subdirectory(DearImgui)
-
+add_subdirectory(Utility)
 
 add_library(AirQualityGui
         STATIC
@@ -16,5 +13,5 @@ add_library(AirQualityGui
 
 target_link_libraries(AirQualityGui
         PRIVATE
-        ImGui
+        DearImGui
         )
