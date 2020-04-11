@@ -12,6 +12,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Components/main_menu_bar.h"
+#include "Components/window.h"
 
 #include <iostream>
 
@@ -72,10 +73,10 @@ int AirQualityGui::Run() {
     ImGuiWindowFlags window_flags = 0;
     /// MY CODE GOES HERE
     Menu::ShowMainMenuBar();
+    Window::ShowWindow();
 
 
     /// MY CODE ENDS HERE
-
     // Render the application
     ImGui::Render();
     int display_w, display_h;
@@ -90,6 +91,15 @@ int AirQualityGui::Run() {
     glfwSwapBuffers(window);
   }
 
+  // Cleanup
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
+
   return 0;
 }
+
 int AirQualityGui::Setup(GLFWwindow *window) {}
