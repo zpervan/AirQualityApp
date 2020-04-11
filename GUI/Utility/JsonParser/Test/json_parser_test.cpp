@@ -7,8 +7,6 @@
 #include "../../DataTypes/data_types.h"
 #include "../json_parser.h"
 
-#include <memory>
-
 class JsonParserTestFixture : protected JsonParser, public ::testing::Test {
 protected:
   void CheckAirQualityMeasurementData(const AirQualityMeasurement &actual,
@@ -18,7 +16,6 @@ protected:
     EXPECT_EQ(actual.time, expected.time);
   }
 
-  std::unique_ptr<JsonParser> default_json_parser_;
   std::string default_fetched_data_{
       R"([{"vrijednost":0.6,"mjernaJedinica":"mg/m3","vrijeme":1585868400000}])"};
 

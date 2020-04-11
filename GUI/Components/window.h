@@ -5,12 +5,15 @@
 #ifndef AIRQUALITYAPP_WINDOW_H
 #define AIRQUALITYAPP_WINDOW_H
 
-#include "../Utility/ThirdParty/DearImgui/imgui.h"
+#include "../Components/config.h"
 #include "../Utility/DataScraper/data_scraper.h"
+#include "../Utility/JsonParser/json_parser.h"
+#include "../Utility/ThirdParty/DearImgui/imgui.h"
 
 #include "config.h"
 #include <algorithm>
 #include <cstdio>
+#include <thread>
 #include <vector>
 
 namespace Window {
@@ -44,27 +47,58 @@ void ShowHistogram() {
 
   ImGui::Begin("Histogram");
 
-  static std::vector<float> values{0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f};
-  static int values_offset = 0;
+  //  static std::vector<float> values{0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f,
+  //  0.2f}; static int values_offset = 0;
+  //
+  //  {
+  //    float average = 0.0f;
+  //
+  //    std::for_each(values.begin(), values.end(),
+  //                  [&average](const float &value) { average += value; });
+  //
+  //    average /= values.size();
+  //    char overlay[32];
+  //    sprintf(overlay, "avg %f", average);
+  //  }
+  //  char overlay[32];
+  //  ImGui::PlotLines("Lines", values.data(), values.size(), values_offset,
+  //                   nullptr, -1.0f, 1.0f, ImVec2(0, 80));
 
-  {
-    float average = 0.0f;
+  if (Utility::counter >= 100) {
 
-    std::for_each(values.begin(), values.end(),
-                  [&average](const float &value) { average += value; });
+    // TODO: No resize in every iteration!!
+    // TODO: Add checkbox logic
+    // TODO: Initial data fetching (before the counter triggers)
 
-    average /= values.size();
-    char overlay[32];
-    sprintf(overlay, "avg %f", average);
+    Utility::air_values.resize(0);
+
+    Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
+                                  "json?postaja=160&polutant=3&tipPodatka=0&"
+                                  "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+
+    Utility::sDataScraper->FetchData();
+
+    Utility::sJsonParser->ReadData(
+        Utility::sDataScraper->GetFetchedData().data());
+
+    Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+
+
+    for(auto& air_quality_measurement : Utility::air_quality_measurements)
+    {
+      Utility::air_values.emplace_back(air_quality_measurement.value);
+    }
+
+    Utility::air_quality_measurements.resize(0);
+    Utility::counter = 0;
   }
-  char overlay[32];
-  ImGui::PlotLines("Lines", values.data(), values.size(), values_offset,
-                   nullptr, -1.0f, 1.0f, ImVec2(0, 80));
 
-  ImGui::PlotHistogram("Histogram", values.data(), values.size(), 0, nullptr,
-                       0.0f, 1.0f, ImVec2(0, 120));
+  ImGui::PlotHistogram("Histogram", Utility::air_values.data(),
+                       Utility::air_values.size(), 0, nullptr, 0.0f, 1.0f,
+                       ImVec2(0, 120));
 
   ImGui::End();
+  Utility::counter++;
 }
 
 } // namespace Window

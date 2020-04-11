@@ -4,10 +4,8 @@
 
 // TODO: Epoch converter
 // TODO: Visualization
-// TODO: Linear regression
 // TODO: Installation script
 // TODO: RunAllTests script
-// TODO: out-of-source build check RoutePlanning project
 
 #include <iostream>
 

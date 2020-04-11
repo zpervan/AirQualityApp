@@ -2,6 +2,7 @@ project(AirQualityGui)
 
 add_subdirectory(Utility)
 
+# TODO: Create set variables for header and src files
 add_library(AirQualityGui
         STATIC
         air_quality_gui.h
@@ -14,4 +15,6 @@ add_library(AirQualityGui
 target_link_libraries(AirQualityGui
         PRIVATE
         DearImGui
+        DataScraper
+        JsonParser
         )

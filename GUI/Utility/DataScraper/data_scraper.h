@@ -13,6 +13,10 @@
 
 #include <string>
 
+// TODO: Refactor the code
+// TODO: Refactor the descriptions
+// TODO: Extend test cases with appending data on "fetch_data" string
+
 /// @brief Fetches data from the given URL
 class DataScraper {
 public:
@@ -26,14 +30,11 @@ public:
   DataScraper(DataScraper &&data_scraper) = delete;
   DataScraper &operator=(DataScraper &&data_scraper) = delete;
 
-  /// @section Various method for fetching data
-
   /// @brief Collects the data from an given URL (website)
   void FetchData();
 
-  /// @section Setter and Getter methods
-  const std::string &GetUrl() const;
-  const std::string &GetFetchedData() const;
+  const std::string &GetUrl() const; // Remove?
+  [[nodiscard]] const std::string &GetFetchedData() const;
 
   void SetUrl(const std::string &url);
 

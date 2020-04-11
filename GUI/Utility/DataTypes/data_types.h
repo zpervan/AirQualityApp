@@ -10,7 +10,7 @@
 
 /// @brief Parameters and values which describe air quality measurement
 struct AirQualityMeasurement {
-  double value{0.0};
+  float value{0.0};
   std::string unit_of_measurement{""};
   long long time{0}; // Unix epoch time
 

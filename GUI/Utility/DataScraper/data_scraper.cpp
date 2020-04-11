@@ -19,6 +19,8 @@ void DataScraper::FetchData() {
 }
 
 void DataScraper::ReadDataFromUrl() {
+  fetched_data_.clear();
+
   curl_easy_setopt(curl_, CURLOPT_URL, url_.c_str());
   curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
   curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &fetched_data_);
