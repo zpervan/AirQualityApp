@@ -2,6 +2,10 @@
 // Air Quality in Croatia
 // Student: Zvonimir Pervan
 
+/*********************************************************************/
+/** Epoch conversion validated with https://www.epochconverter.com/ **/
+/*********************************************************************/
+
 #include <gtest/gtest.h>
 
 #include "../../DataTypes/data_types.h"
@@ -13,19 +17,18 @@ protected:
                                       const AirQualityMeasurement &expected) {
     EXPECT_EQ(actual.value, expected.value);
     EXPECT_EQ(actual.unit_of_measurement, expected.unit_of_measurement);
-    EXPECT_EQ(actual.time, expected.time);
+    EXPECT_EQ(actual.epoch_time, expected.epoch_time);
+    EXPECT_EQ(actual.standard_time, expected.standard_time);
   }
 
   std::string default_fetched_data_{
       R"([{"vrijednost":0.6,"mjernaJedinica":"mg/m3","vrijeme":1585868400000}])"};
-
-  AirQualityMeasurement default_air_quality_measurement_data_{0.6, "mg/m3",
-                                                              1585868400000};
+  AirQualityMeasurement default_air_quality_measurement_data_{
+      0.6, "mg/m3", 1585868400, "04/03/2020 01:00"};
 };
 
-TEST_F(
-    JsonParserTestFixture,
-    GivenAirQualityMeasurement_WhenDataIsRead_ThenParserDataBufferHasValue) {
+TEST_F(JsonParserTestFixture,
+       GivenAirQualityMeasurement_WhenDataIsRead_ThenParserDataBufferHasValue) {
 
   std::string expected_fetched_data{
       R"([{"vrijednost":0.6,"mjernaJedinica":"mg/m3","vrijeme":1585868400000}])"};
@@ -104,10 +107,10 @@ TEST_F(
 
   const auto actual_measurements = GetAirQualityMeasurements();
 
-  const std::array<AirQualityMeasurement,3> expected_measurements{{
-      {0.1, "mg/m3-1", 11111111111},
-      {0.2, "mg/m3-2", 22222222222},
-      {0.3, "mg/m3-3", 33333333333}}};
+  const std::array<AirQualityMeasurement, 3> expected_measurements{
+      {{0.1, "mg/m3-1", 1111111111, "03/18/2005 02:58"},
+       {0.2, "mg/m3-2", 2222222222, "06/02/2040 05:57"},
+       {0.3, "mg/m3-3", 3333333333, "08/18/2075 07:55"}}};
 
   for (std::size_t i = 0; i < actual_measurements.size(); i++) {
     CheckAirQualityMeasurementData(actual_measurements.at(i),

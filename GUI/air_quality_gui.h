@@ -11,7 +11,7 @@
 
 class AirQualityGui {
 public:
-  int Run();
+  static int Run();
 };
 
 #endif // AIRQUALITYAPP_AIR_QUALITY_GUI_H

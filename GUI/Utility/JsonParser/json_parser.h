@@ -34,6 +34,8 @@ private:
   void RemoveRedundantCharacters();
   void ReplaceSpecialCharacters();
   void AssignAirParametersValues();
+  std::pair<std::time_t, std::string>
+  ConvertFromEpochToStandardTime(std::string &epoch_time);
 
   std::vector<AirQualityMeasurement> air_quality_measurements_;
   std::string data_buffer_{""};

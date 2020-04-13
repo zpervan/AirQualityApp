@@ -3,19 +3,15 @@
 // Student: Zvonimir Pervan
 
 // TODO: Epoch converter
-// TODO: Visualization
+// TODO: Add time for fetching data
 // TODO: Installation script
 // TODO: RunAllTests script
-
-#include <iostream>
 
 #include "GUI/air_quality_gui.h"
 
 int main() {
 
-  AirQualityGui *air_quality_gui = new AirQualityGui;
-
-  air_quality_gui->Run();
+  AirQualityGui::Run();
 
   return 0;
 }

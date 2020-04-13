@@ -70,11 +70,13 @@ void ShowCarbonMonoxide() {
                        Config::Plot::carbon_monoxide_minmax_scaling.second,
                        ImVec2(350, 120));
 
+  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
+
   ImGui::End();
 }
 
 void ShowBenzene() {
-  ImGui::SetNextWindowPos(ImVec2(650, 180), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(650, 220), ImGuiCond_FirstUseEver);
 
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
@@ -83,11 +85,13 @@ void ShowBenzene() {
       nullptr, Config::Plot::benzene_minmax_scaling.first,
       Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
 
+  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
+
   ImGui::End();
 }
 
 void ShowOzone() {
-  ImGui::SetNextWindowPos(ImVec2(650, 340), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(650, 420), ImGuiCond_FirstUseEver);
 
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
@@ -95,6 +99,8 @@ void ShowOzone() {
       "Histogram", Gas::ozone_values.data(), Gas::ozone_values.size(), 1.f,
       nullptr, Config::Plot::ozone_minmax_scaling.first,
       Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
+
+  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
 
   ImGui::End();
 }
