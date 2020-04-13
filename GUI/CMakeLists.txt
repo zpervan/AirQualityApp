@@ -10,6 +10,7 @@ add_library(AirQualityGui
         Components/main_menu_bar.h
         Components/window.h
         Components/config.h
+        Components/process_data.h
         )
 
 target_link_libraries(AirQualityGui

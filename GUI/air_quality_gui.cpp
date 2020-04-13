@@ -70,10 +70,12 @@ int AirQualityGui::Run() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    ImGuiWindowFlags window_flags = 0;
     /// MY CODE GOES HERE
-    Menu::ShowMainMenuBar();
-    Window::ShowWindow();
+
+    {
+      Menu::ShowMainMenuBar();
+      Window::ShowWindow();
+    }
 
     /// MY CODE ENDS HERE
     // Render the application

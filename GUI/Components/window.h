@@ -20,13 +20,13 @@ namespace Window {
 
 // Forward declarations
 void ShowCheckboxes();
-void ShowHistogram();
+void ShowHistograms();
 
 // Function definitions
 
 static void ShowWindow() {
   ShowCheckboxes();
-  ShowHistogram();
+  ShowHistograms();
 }
 
 void ShowCheckboxes() {
@@ -35,70 +35,54 @@ void ShowCheckboxes() {
   ImGui::SetWindowSize(Config::Window::window_size);
 
   ImGui::Text("Select data to visualize:");
-  ImGui::Checkbox(" Carbon Monoxide (CO)",
-                  &Config::Window::show_carbon_monoxide);
-  ImGui::Checkbox(" Benzen", &Config::Window::show_benzen);
+  ImGui::Checkbox(" Carbon Monoxide (CO)", &Config::Window::show_carbon_monoxide);
+  ImGui::Checkbox(" Benzene", &Config::Window::show_benzene);
   ImGui::Checkbox(" Ozone (O3)", &Config::Window::show_ozone);
 
   ImGui::End();
 }
 
-void ShowHistogram() {
+void ShowCarbonMonoxide();
+void ShowBenzene();
+void ShowOzone();
 
-  ImGui::Begin("Histogram");
+// TODO: No resize in every iteration!!
+// TODO: Initial data fetching (before the counter triggers)
 
-  //  static std::vector<float> values{0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f,
-  //  0.2f}; static int values_offset = 0;
-  //
-  //  {
-  //    float average = 0.0f;
-  //
-  //    std::for_each(values.begin(), values.end(),
-  //                  [&average](const float &value) { average += value; });
-  //
-  //    average /= values.size();
-  //    char overlay[32];
-  //    sprintf(overlay, "avg %f", average);
-  //  }
-  //  char overlay[32];
-  //  ImGui::PlotLines("Lines", values.data(), values.size(), values_offset,
-  //                   nullptr, -1.0f, 1.0f, ImVec2(0, 80));
+void ShowHistograms() {
+  if (Config::Window::show_carbon_monoxide) ShowCarbonMonoxide();
+  if (Config::Window::show_benzene)         ShowBenzene();
+  if (Config::Window::show_ozone)           ShowOzone();
+}
 
-  if (Utility::counter >= 100) {
+void ShowCarbonMonoxide() {
+  ImGui::Begin("Carbon Monoxide - CO", &Config::Window::show_carbon_monoxide);
 
-    // TODO: No resize in every iteration!!
-    // TODO: Add checkbox logic
-    // TODO: Initial data fetching (before the counter triggers)
+  ImGui::PlotHistogram("Histogram", Gas::carbon_monoxide_values.data(),
+                       Gas::carbon_monoxide_values.size(), 0, nullptr, 0.0f,
+                       1.0f, ImVec2(0, 120));
 
-    Utility::air_values.resize(0);
+  ImGui::End();
+}
 
-    Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
-                                  "json?postaja=160&polutant=3&tipPodatka=0&"
-                                  "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+void ShowBenzene() {
+  ImGui::Begin("Benzene", &Config::Window::show_benzene);
 
-    Utility::sDataScraper->FetchData();
-
-    Utility::sJsonParser->ReadData(
-        Utility::sDataScraper->GetFetchedData().data());
-
-    Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
-
-
-    for(auto& air_quality_measurement : Utility::air_quality_measurements)
-    {
-      Utility::air_values.emplace_back(air_quality_measurement.value);
-    }
-
-    Utility::air_quality_measurements.resize(0);
-    Utility::counter = 0;
-  }
-
-  ImGui::PlotHistogram("Histogram", Utility::air_values.data(),
-                       Utility::air_values.size(), 0, nullptr, 0.0f, 1.0f,
+  ImGui::PlotHistogram("Histogram", Gas::benzene_values.data(),
+                       Gas::benzene_values.size(), 0, nullptr, 0.0f, 1.0f,
                        ImVec2(0, 120));
 
   ImGui::End();
-  Utility::counter++;
+}
+
+void ShowOzone() {
+  ImGui::Begin("Ozone", &Config::Window::show_ozone);
+
+  ImGui::PlotHistogram("Histogram", Gas::ozone_values.data(),
+                       Gas::ozone_values.size(), 0, nullptr, 0.0f, 1.0f,
+                       ImVec2(0, 120));
+
+  ImGui::End();
 }
 
 } // namespace Window
