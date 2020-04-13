@@ -67,6 +67,9 @@ int AirQualityGui::Run() {
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+  ImGuiWindowFlags window_flags = 0;
+  window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+
   std::thread process_data = std::thread(ProcessData);
 
   while (!glfwWindowShouldClose(window)) {

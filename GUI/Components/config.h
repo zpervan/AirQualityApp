@@ -19,13 +19,20 @@
 namespace Config {
 namespace Window {
 
-std::pair<uint16_t , uint16_t> main_window_size{1280, 720};
-ImVec2 widget_window_size{200.f, 300.f};
+static std::pair<uint16_t , uint16_t> main_window_size{1280, 720};
+static ImVec2 widget_window_size{200.f, 300.f};
 
 static bool enable_carbon_monoxide{false};
 static bool enable_benzene{false};
 static bool enable_ozone{false};
 } // namespace Window
+
+namespace Plot
+{
+static std::pair<float, float> carbon_monoxide_minmax_scaling{0.f, 1.f};
+static std::pair<float, float> benzene_minmax_scaling{0.f, 1.f};
+static std::pair<float, float> ozone_minmax_scaling{0.f, 1.f};
+} // namespace Plot
 
 namespace DataFetching
 {
