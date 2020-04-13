@@ -1,12 +1,37 @@
-//
-// Created by zvonimir on 13. 04. 2020..
-//
+// Udacity capstone project, 2020
+// Project: Air Quality in Croatia
+// Student: Zvonimir Pervan
 
 #ifndef AIRQUALITYAPP_PROCESS_DATA_H
 #define AIRQUALITYAPP_PROCESS_DATA_H
 
-void ProcessCarbonMonoxide(std::string &fetch_data) {
+#include "config.h"
+#include <chrono>
+#include <iostream>
+#include <thread>
+// TODO: No resize in every iteration!!
+// TODO: Initial data fetching (before the counter triggers)
 
+void ProcessCarbonMonoxide();
+void ProcessBenzene();
+void ProcessOzone();
+
+void ProcessData() {
+  while (Config::DataFetching::enable_data_fetching) {
+    std::cout << "Processing data..." << std::endl;
+
+    if (Config::Window::enable_carbon_monoxide) ProcessCarbonMonoxide();
+    if (Config::Window::enable_benzene) ProcessBenzene();
+    if (Config::Window::enable_ozone) ProcessOzone();
+
+    std::cout << "Processing DONE!" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
+}
+
+void ProcessCarbonMonoxide() {
+
+  std::cout << "Processing CO data..." << std::endl;
   Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
                                 "json?postaja=160&polutant=3&tipPodatka=0&"
                                 "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
@@ -14,19 +39,68 @@ void ProcessCarbonMonoxide(std::string &fetch_data) {
   Utility::sDataScraper->FetchData();
 
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
-  if (Utility::counter >= 100) {
-    Gas::carbon_monoxide_values.resize(0);
+  Gas::carbon_monoxide_values.resize(0);
 
-    Utility::sJsonParser->ReadData(fetched_data.data());
-    Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+  Utility::sJsonParser->ReadData(fetched_data.data());
+  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-    for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-      Gas::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
-    }
-
-    Utility::air_quality_measurements.resize(0);
-    Utility::counter = 0;
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Gas::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
   }
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing CO data DONE!" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
 };
+
+void ProcessBenzene()
+{
+  std::cout << "Processing Benzene data..." << std::endl;
+  Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
+                                "json?postaja=160&polutant=32&tipPodatka=0&"
+                                "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+
+  Utility::sDataScraper->FetchData();
+
+  auto fetched_data = Utility::sDataScraper->GetFetchedData();
+
+  Utility::sJsonParser->ReadData(fetched_data.data());
+  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+
+  Gas::benzene_values.resize(0);
+
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Gas::benzene_values.emplace_back(air_quality_measurement.value);
+  }
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing Benzene data DONE!" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+}
+
+void ProcessOzone()
+{
+  std::cout << "Processing Ozone data..." << std::endl;
+  Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
+                                "json?postaja=160&polutant=31&tipPodatka=0&"
+                                "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+
+  Utility::sDataScraper->FetchData();
+
+  auto fetched_data = Utility::sDataScraper->GetFetchedData();
+
+  Utility::sJsonParser->ReadData(fetched_data.data());
+  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+
+  Gas::ozone_values.resize(0);
+
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Gas::ozone_values.emplace_back(air_quality_measurement.value);
+  }
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing Ozone data DONE!" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+}
 
 #endif // AIRQUALITYAPP_PROCESS_DATA_H

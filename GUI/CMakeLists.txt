@@ -18,4 +18,5 @@ target_link_libraries(AirQualityGui
         DearImGui
         DataScraper
         JsonParser
+        pthread
         )

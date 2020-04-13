@@ -11,7 +11,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Components/config.h"
 #include "Components/main_menu_bar.h"
+#include "Components/process_data.h"
 #include "Components/window.h"
 
 #include <iostream>
@@ -32,11 +34,13 @@ int AirQualityGui::Run() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
   // Create window with graphics context
-  GLFWwindow *window =
-      glfwCreateWindow(1280, 720, "Air Quality Monitor", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(Config::Window::main_window_size.first,
+                                        Config::Window::main_window_size.second,
+                                        "Air Quality Monitor", NULL, NULL);
 
   if (window == NULL)
     return 1;
+
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
 
@@ -63,6 +67,8 @@ int AirQualityGui::Run() {
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+  std::thread process_data = std::thread(ProcessData);
+
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -72,10 +78,8 @@ int AirQualityGui::Run() {
     ImGui::NewFrame();
     /// MY CODE GOES HERE
 
-    {
-      Menu::ShowMainMenuBar();
-      Window::ShowWindow();
-    }
+    Menu::ShowMainMenuBar();
+    Window::ShowWindow();
 
     /// MY CODE ENDS HERE
     // Render the application
@@ -93,6 +97,9 @@ int AirQualityGui::Run() {
   }
 
   // Cleanup
+
+  process_data.detach();
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

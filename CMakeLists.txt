@@ -14,4 +14,5 @@ add_executable(AirQualityApp runner.cpp)
 target_link_libraries(AirQualityApp
         PRIVATE
         AirQualityGui
+        pthread
         )

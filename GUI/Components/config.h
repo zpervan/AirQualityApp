@@ -19,14 +19,18 @@
 namespace Config {
 namespace Window {
 
-static ImVec2 window_size{200.f, 300.f};
+std::pair<uint16_t , uint16_t> main_window_size{1280, 720};
+ImVec2 widget_window_size{200.f, 300.f};
 
-static bool show_carbon_monoxide{false};
-static bool show_benzene{false};
-static bool show_ozone{false};
-
-static bool data_fetched{false};
+static bool enable_carbon_monoxide{false};
+static bool enable_benzene{false};
+static bool enable_ozone{false};
 } // namespace Window
+
+namespace DataFetching
+{
+static bool enable_data_fetching{true};
+} // namespace DataFetching
 } // namespace Config
 
 namespace Utility {
