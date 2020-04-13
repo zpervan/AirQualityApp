@@ -70,7 +70,8 @@ void ShowCarbonMonoxide() {
                        Config::Plot::carbon_monoxide_minmax_scaling.second,
                        ImVec2(350, 120));
 
-  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
+  ImGui::Text("%s",
+              (Utility::last_fetch + Gas::carbon_monoxide_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -85,7 +86,7 @@ void ShowBenzene() {
       nullptr, Config::Plot::benzene_minmax_scaling.first,
       Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
+  ImGui::Text("%s", (Utility::last_fetch + Gas::benzene_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -100,7 +101,7 @@ void ShowOzone() {
       nullptr, Config::Plot::ozone_minmax_scaling.first,
       Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("Last fetching: dd.mm.yyyy, hh:mm");
+  ImGui::Text("%s", (Utility::last_fetch + Gas::ozone_last_fetch).c_str());
 
   ImGui::End();
 }

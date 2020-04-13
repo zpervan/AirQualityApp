@@ -48,12 +48,12 @@ void ProcessCarbonMonoxide() {
       "13.04.2020");
 
   Utility::sDataScraper->FetchData();
-
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
-  Gas::carbon_monoxide_values.resize(0);
-
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+
+  Gas::carbon_monoxide_last_fetch = Utility::air_quality_measurements.back().standard_time;
+  Gas::carbon_monoxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Gas::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
@@ -74,12 +74,11 @@ void ProcessBenzene() {
                                 "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
   Utility::sDataScraper->FetchData();
-
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
-
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
+  Gas::benzene_last_fetch = Utility::air_quality_measurements.back().standard_time;
   Gas::benzene_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
@@ -88,6 +87,7 @@ void ProcessBenzene() {
 
   Config::Plot::benzene_minmax_scaling =
       CalculateMinMaxPlotScaling(Gas::benzene_values);
+
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Benzene data DONE!" << std::endl;
@@ -101,13 +101,12 @@ void ProcessOzone() {
                                 "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
   Utility::sDataScraper->FetchData();
-
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
-
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
   Gas::ozone_values.resize(0);
+  Gas::ozone_last_fetch = Utility::air_quality_measurements.back().standard_time;
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Gas::ozone_values.emplace_back(air_quality_measurement.value);

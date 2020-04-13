@@ -2,10 +2,11 @@
 // Project: Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-// TODO: Epoch converter
-// TODO: Add time for fetching data
 // TODO: Installation script
 // TODO: RunAllTests script
+// TODO: Add date when to fetch data
+// TODO: Implement exit functionality
+// TODO: Linear regression?
 
 #include "GUI/air_quality_gui.h"
 

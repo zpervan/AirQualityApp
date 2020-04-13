@@ -16,6 +16,8 @@
 
 #include <memory>
 
+// TODO: Extract Utility and Gas data into a separate file
+
 namespace Config {
 namespace Window {
 
@@ -44,11 +46,8 @@ namespace Utility {
 
 static std::unique_ptr<DataScraper> sDataScraper = std::make_unique<DataScraper>();
 static std::unique_ptr<JsonParser> sJsonParser = std::make_unique<JsonParser>();
-
 static std::vector<AirQualityMeasurement> air_quality_measurements{};
-
-static std::size_t counter{0};
-
+static std::string last_fetch{"Last update: "};
 } // namespace Utility
 
 namespace Gas
@@ -56,6 +55,10 @@ namespace Gas
 static std::vector<float> carbon_monoxide_values{};
 static std::vector<float> benzene_values{};
 static std::vector<float> ozone_values{};
+
+static std::string carbon_monoxide_last_fetch{"Not yet fetched"};
+static std::string benzene_last_fetch{"Not yet fetched"};
+static std::string ozone_last_fetch{"Not yet fetched"};
 }
 
 #endif // AIRQUALITYAPP_CONFIG_H
