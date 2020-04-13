@@ -18,7 +18,7 @@
 void ProcessCarbonMonoxide();
 void ProcessBenzene();
 void ProcessOzone();
-std::pair<float, float> GetMinMaxScalingValues(std::vector<float> &values);
+std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values);
 
 void ProcessData() {
   while (1) {
@@ -30,12 +30,9 @@ void ProcessData() {
 
     std::cout << "Processing data..." << std::endl;
 
-    if (Config::Window::enable_carbon_monoxide)
-      ProcessCarbonMonoxide();
-    if (Config::Window::enable_benzene)
-      ProcessBenzene();
-    if (Config::Window::enable_ozone)
-      ProcessOzone();
+    if (Config::Window::enable_carbon_monoxide) ProcessCarbonMonoxide();
+    if (Config::Window::enable_benzene) ProcessBenzene();
+    if (Config::Window::enable_ozone) ProcessOzone();
 
     std::cout << "Processing DONE!" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -45,9 +42,10 @@ void ProcessData() {
 void ProcessCarbonMonoxide() {
 
   std::cout << "Processing CO data..." << std::endl;
-  Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
-                                "json?postaja=160&polutant=3&tipPodatka=0&"
-                                "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+  Utility::sDataScraper->SetUrl(
+      "http://iszz.azo.hr/iskzl/rs/podatak/export/"
+      "json?postaja=160&polutant=3&tipPodatka=0&vrijemeOd=13.04.2020&vrijemeDo="
+      "13.04.2020");
 
   Utility::sDataScraper->FetchData();
 
@@ -62,7 +60,7 @@ void ProcessCarbonMonoxide() {
   }
 
   Config::Plot::carbon_monoxide_minmax_scaling =
-      GetMinMaxScalingValues(Gas::carbon_monoxide_values);
+      CalculateMinMaxPlotScaling(Gas::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing CO data DONE!" << std::endl;
@@ -73,7 +71,7 @@ void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
   Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
                                 "json?postaja=160&polutant=32&tipPodatka=0&"
-                                "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+                                "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
   Utility::sDataScraper->FetchData();
 
@@ -89,7 +87,7 @@ void ProcessBenzene() {
   }
 
   Config::Plot::benzene_minmax_scaling =
-      GetMinMaxScalingValues(Gas::benzene_values);
+      CalculateMinMaxPlotScaling(Gas::benzene_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Benzene data DONE!" << std::endl;
@@ -100,7 +98,7 @@ void ProcessOzone() {
   std::cout << "Processing Ozone data..." << std::endl;
   Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
                                 "json?postaja=160&polutant=31&tipPodatka=0&"
-                                "vrijemeOd=11.04.2020&vrijemeDo=11.04.2020");
+                                "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
   Utility::sDataScraper->FetchData();
 
@@ -116,16 +114,25 @@ void ProcessOzone() {
   }
 
   Config::Plot::ozone_minmax_scaling =
-      GetMinMaxScalingValues(Gas::ozone_values);
+      CalculateMinMaxPlotScaling(Gas::ozone_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Ozone data DONE!" << std::endl;
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-std::pair<float, float> GetMinMaxScalingValues(std::vector<float> &values) {
-  const float min_element = *std::min_element(values.begin(), values.end());
-  const float max_element = *std::max_element(values.begin(), values.end());
+std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
+  float min_element = *std::min_element(values.begin(), values.end());
+  float max_element = *std::max_element(values.begin(), values.end());
+
+  // Sometimes the measurement have the same values and it's shown as there are
+  // no values at all. This is just offseting the plot to see the values.
+  if (min_element == max_element) {
+    max_element += 1.f;
+  }
+
+  // Because the minimum value is not shown in the plot, offset it for 1 unit
+  (min_element - 1) < 0 ? min_element = 0 : min_element -= 1.f;
 
   return {min_element, max_element};
 }

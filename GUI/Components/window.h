@@ -65,7 +65,7 @@ void ShowCarbonMonoxide() {
   ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
 
   ImGui::PlotHistogram("Histogram", Gas::carbon_monoxide_values.data(),
-                       Gas::carbon_monoxide_values.size(), 1.f, nullptr,
+                       Gas::carbon_monoxide_values.size(), 100.f, nullptr,
                        Config::Plot::carbon_monoxide_minmax_scaling.first,
                        Config::Plot::carbon_monoxide_minmax_scaling.second,
                        ImVec2(350, 120));
