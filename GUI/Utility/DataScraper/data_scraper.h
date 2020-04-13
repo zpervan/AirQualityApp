@@ -10,12 +10,7 @@
 #define AIRQUALITYAPP_DATA_SCRAPER_H
 
 #include <curl/curl.h>
-
 #include <string>
-
-// TODO: Refactor the code
-// TODO: Refactor the descriptions
-// TODO: Extend test cases with appending data on "fetch_data" string
 
 /// @brief Fetches data from the given URL
 class DataScraper {
@@ -23,23 +18,17 @@ public:
   DataScraper() = default;
   ~DataScraper() = default;
 
-  /// @attention As there is no need to copy or move data to another DataScraper
-  /// object, the copy and move functionalities will be explicitly deleted
-  DataScraper(const DataScraper &data_scraper) = delete;
-  DataScraper &operator=(const DataScraper &data_scraper) = delete;
-  DataScraper(DataScraper &&data_scraper) = delete;
-  DataScraper &operator=(DataScraper &&data_scraper) = delete;
-
   /// @brief Collects the data from an given URL (website)
   void FetchData();
 
-  const std::string &GetUrl() const; // Remove?
-  [[nodiscard]] const std::string &GetFetchedData() const;
-
+  /// @brief Set the URL from which data should be fetched
   void SetUrl(const std::string &url);
 
+  /// @brief Get the data acquired from the given URL
+  [[nodiscard]] const std::string &GetFetchedData() const;
+
 private:
-  void ReadDataFromUrl();
+  void FetchDataFromUrl();
   static std::size_t WriteCallback(void *contents, size_t size, size_t nmemb,
                                    void *userp);
   CURL *curl_{nullptr};
