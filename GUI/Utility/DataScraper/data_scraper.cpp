@@ -38,3 +38,9 @@ std::size_t DataScraper::WriteCallback(void *contents, size_t size,
   ((std::string *)userp)->append((char *)contents, size * nmemb);
   return size * nmemb;
 }
+
+void DataScraper::SetDate(const std::string &from, const std::string &to) {
+  url_ = url_components_.address + url_components_.station + "160" +
+         url_components_.pollutant + "3" + url_components_.data_type + "0" +
+         url_components_.date_from + from + url_components_.date_to + to;
+}
