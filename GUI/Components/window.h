@@ -64,14 +64,14 @@ void ShowCarbonMonoxide() {
 
   ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
 
-  ImGui::PlotHistogram("Histogram", Gas::carbon_monoxide_values.data(),
-                       Gas::carbon_monoxide_values.size(), 100.f, nullptr,
+  ImGui::PlotHistogram("Histogram", Pollutant::carbon_monoxide_values.data(),
+                       Pollutant::carbon_monoxide_values.size(), 100.f, nullptr,
                        Config::Plot::carbon_monoxide_minmax_scaling.first,
                        Config::Plot::carbon_monoxide_minmax_scaling.second,
                        ImVec2(350, 120));
 
   ImGui::Text("%s",
-              (Utility::last_fetch + Gas::carbon_monoxide_last_fetch).c_str());
+              (Utility::last_fetch + Pollutant::carbon_monoxide_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -82,11 +82,12 @@ void ShowBenzene() {
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
   ImGui::PlotHistogram(
-      "Histogram", Gas::benzene_values.data(), Gas::benzene_values.size(), 1.f,
+      "Histogram", Pollutant::benzene_values.data(),
+                       Pollutant::benzene_values.size(), 1.f,
       nullptr, Config::Plot::benzene_minmax_scaling.first,
       Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Gas::benzene_last_fetch).c_str());
+  ImGui::Text("%s", (Utility::last_fetch + Pollutant::benzene_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -97,11 +98,12 @@ void ShowOzone() {
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
   ImGui::PlotHistogram(
-      "Histogram", Gas::ozone_values.data(), Gas::ozone_values.size(), 1.f,
+      "Histogram", Pollutant::ozone_values.data(),
+                       Pollutant::ozone_values.size(), 1.f,
       nullptr, Config::Plot::ozone_minmax_scaling.first,
       Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Gas::ozone_last_fetch).c_str());
+  ImGui::Text("%s", (Utility::last_fetch + Pollutant::ozone_last_fetch).c_str());
 
   ImGui::End();
 }

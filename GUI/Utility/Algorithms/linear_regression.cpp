@@ -9,21 +9,21 @@
 #include <stdexcept>
 
 LinearRegression &
-LinearRegression::operator=(const LinearRegression &linear_regression) {
-  x_values_ = linear_regression.x_values_;
-  y_values_ = linear_regression.y_values_;
-  squared_values_ = linear_regression.squared_values_;
-  product_values_ = linear_regression.product_values_;
+LinearRegression::operator=(const LinearRegression &rhs) {
+  x_values_ = rhs.x_values_;
+  y_values_ = rhs.y_values_;
+  squared_values_ = rhs.squared_values_;
+  product_values_ = rhs.product_values_;
 
-  sum_x_value_ = linear_regression.sum_x_value_;
-  sum_y_value_ = linear_regression.sum_y_value_;
-  sum_squared_value_ = linear_regression.sum_squared_value_;
-  sum_product_value_ = linear_regression.sum_product_value_;
+  sum_x_value_ = rhs.sum_x_value_;
+  sum_y_value_ = rhs.sum_y_value_;
+  sum_squared_value_ = rhs.sum_squared_value_;
+  sum_product_value_ = rhs.sum_product_value_;
 
-  data_value_count_ = linear_regression.data_value_count_;
+  data_value_count_ = rhs.data_value_count_;
 
-  slope_ = linear_regression.slope_;
-  intercept_ = linear_regression.intercept_;
+  slope_ = rhs.slope_;
+  intercept_ = rhs.intercept_;
 
   return *this;
 }

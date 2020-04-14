@@ -31,7 +31,7 @@ public:
   LinearRegression() = default;
   LinearRegression(const LinearRegression &linear_regression) = delete;
   LinearRegression(LinearRegression &&linear_regression) = delete;
-  LinearRegression &operator=(const LinearRegression &linear_regression);
+  LinearRegression &operator=(const LinearRegression &rhs);
   LinearRegression &operator=(LinearRegression &&linear_regression);
 
   const std::vector<int> &GetXValues() const;

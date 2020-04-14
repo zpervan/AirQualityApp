@@ -5,10 +5,8 @@
 #include "json_parser.h"
 
 #include <algorithm>
-#include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
 
 void JsonParser::ReadData(std::string &&data) {
   data_buffer_.clear();

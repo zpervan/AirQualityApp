@@ -49,18 +49,18 @@ void ProcessCarbonMonoxide() {
 
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
-  Utility::sJsonParser->ReadData(fetched_data.data());
+  Utility::sJsonParser->ReadData(std::move(fetched_data));
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Gas::carbon_monoxide_last_fetch = Utility::air_quality_measurements.back().standard_time;
-  Gas::carbon_monoxide_values.resize(0);
+  Pollutant::carbon_monoxide_last_fetch = Utility::air_quality_measurements.back().standard_time;
+  Pollutant::carbon_monoxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Gas::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
+    Pollutant::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::carbon_monoxide_minmax_scaling =
-      CalculateMinMaxPlotScaling(Gas::carbon_monoxide_values);
+      CalculateMinMaxPlotScaling(Pollutant::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing CO data DONE!" << std::endl;
@@ -78,15 +78,15 @@ void ProcessBenzene() {
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Gas::benzene_last_fetch = Utility::air_quality_measurements.back().standard_time;
-  Gas::benzene_values.resize(0);
+  Pollutant::benzene_last_fetch = Utility::air_quality_measurements.back().standard_time;
+  Pollutant::benzene_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Gas::benzene_values.emplace_back(air_quality_measurement.value);
+    Pollutant::benzene_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::benzene_minmax_scaling =
-      CalculateMinMaxPlotScaling(Gas::benzene_values);
+      CalculateMinMaxPlotScaling(Pollutant::benzene_values);
 
 
   Utility::air_quality_measurements.resize(0);
@@ -105,15 +105,15 @@ void ProcessOzone() {
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Gas::ozone_values.resize(0);
-  Gas::ozone_last_fetch = Utility::air_quality_measurements.back().standard_time;
+  Pollutant::ozone_values.resize(0);
+  Pollutant::ozone_last_fetch = Utility::air_quality_measurements.back().standard_time;
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Gas::ozone_values.emplace_back(air_quality_measurement.value);
+    Pollutant::ozone_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::ozone_minmax_scaling =
-      CalculateMinMaxPlotScaling(Gas::ozone_values);
+      CalculateMinMaxPlotScaling(Pollutant::ozone_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Ozone data DONE!" << std::endl;
