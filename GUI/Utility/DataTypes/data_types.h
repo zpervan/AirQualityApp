@@ -46,5 +46,10 @@ private:
   UrlComponents() = default;
 };
 
-enum class Pollutants { CARBON_MONOXIDE = 3, OZONE = 32, BENZEN = 31 };
+enum class Pollutant {
+  UNKNOWN = 0,
+  CARBON_MONOXIDE = 3,
+  OZONE = 32,
+  BENZEN = 31
+};
 #endif // AIRQUALITYAPP_DATA_TYPES_H
