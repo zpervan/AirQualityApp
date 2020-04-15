@@ -21,7 +21,7 @@ void ProcessOzone();
 std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values);
 
 void ProcessData() {
-  while (1) {
+  while (true) {
     if (!Config::DataFetching::enable_data_fetching) {
       std::cout << "Data fetching is disabled." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -30,9 +30,12 @@ void ProcessData() {
 
     std::cout << "Processing data..." << std::endl;
 
-    if (Config::Window::enable_carbon_monoxide) ProcessCarbonMonoxide();
-    if (Config::Window::enable_benzene) ProcessBenzene();
-    if (Config::Window::enable_ozone) ProcessOzone();
+    if (Config::Window::enable_carbon_monoxide)
+      ProcessCarbonMonoxide();
+    if (Config::Window::enable_benzene)
+      ProcessBenzene();
+    if (Config::Window::enable_ozone)
+      ProcessOzone();
 
     std::cout << "Processing DONE!" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -42,25 +45,25 @@ void ProcessData() {
 void ProcessCarbonMonoxide() {
 
   std::cout << "Processing CO data..." << std::endl;
-  Utility::sDataScraper->SetUrl(
-      "http://iszz.azo.hr/iskzl/rs/podatak/export/"
-      "json?postaja=160&polutant=3&tipPodatka=0&vrijemeOd=13.04.2020&vrijemeDo="
-      "13.04.2020");
 
+  Utility::sDataScraper->SetPollutant(Pollutant::CARBON_MONOXIDE);
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
+
   Utility::sJsonParser->ReadData(std::move(fetched_data));
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Pollutant::carbon_monoxide_last_fetch = Utility::air_quality_measurements.back().standard_time;
-  Pollutant::carbon_monoxide_values.resize(0);
+  Pollutants::carbon_monoxide_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
+  Pollutants::carbon_monoxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Pollutant::carbon_monoxide_values.emplace_back(air_quality_measurement.value);
+    Pollutants::carbon_monoxide_values.emplace_back(
+        air_quality_measurement.value);
   }
 
   Config::Plot::carbon_monoxide_minmax_scaling =
-      CalculateMinMaxPlotScaling(Pollutant::carbon_monoxide_values);
+      CalculateMinMaxPlotScaling(Pollutants::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing CO data DONE!" << std::endl;
@@ -69,25 +72,25 @@ void ProcessCarbonMonoxide() {
 
 void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
-  Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
-                                "json?postaja=160&polutant=32&tipPodatka=0&"
-                                "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
+  Utility::sDataScraper->SetPollutant(Pollutant::BENZEN);
+  Utility::sDataScraper->SetDate("14.04.2020", "14.04.2020");
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
+
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Pollutant::benzene_last_fetch = Utility::air_quality_measurements.back().standard_time;
-  Pollutant::benzene_values.resize(0);
+  Pollutants::benzene_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
+  Pollutants::benzene_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Pollutant::benzene_values.emplace_back(air_quality_measurement.value);
+    Pollutants::benzene_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::benzene_minmax_scaling =
-      CalculateMinMaxPlotScaling(Pollutant::benzene_values);
-
+      CalculateMinMaxPlotScaling(Pollutants::benzene_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Benzene data DONE!" << std::endl;
@@ -96,24 +99,24 @@ void ProcessBenzene() {
 
 void ProcessOzone() {
   std::cout << "Processing Ozone data..." << std::endl;
-  Utility::sDataScraper->SetUrl("http://iszz.azo.hr/iskzl/rs/podatak/export/"
-                                "json?postaja=160&polutant=31&tipPodatka=0&"
-                                "vrijemeOd=13.04.2020&vrijemeDo=13.04.2020");
 
+  Utility::sDataScraper->SetPollutant(Pollutant::OZONE);
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->GetFetchedData();
+
   Utility::sJsonParser->ReadData(fetched_data.data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
-  Pollutant::ozone_values.resize(0);
-  Pollutant::ozone_last_fetch = Utility::air_quality_measurements.back().standard_time;
+  Pollutants::ozone_values.resize(0);
+  Pollutants::ozone_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
-    Pollutant::ozone_values.emplace_back(air_quality_measurement.value);
+    Pollutants::ozone_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::ozone_minmax_scaling =
-      CalculateMinMaxPlotScaling(Pollutant::ozone_values);
+      CalculateMinMaxPlotScaling(Pollutants::ozone_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Ozone data DONE!" << std::endl;
@@ -124,7 +127,7 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
   float min_element = *std::min_element(values.begin(), values.end());
   float max_element = *std::max_element(values.begin(), values.end());
 
-  // Sometimes the measurement have the same values and it's shown as there are
+  // Sometimes the measurements have the same value and it's shown as there are
   // no values at all. This is just offseting the plot to see the values.
   if (min_element == max_element) {
     max_element += 1.f;

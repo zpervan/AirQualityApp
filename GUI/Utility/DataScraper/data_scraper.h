@@ -11,9 +11,14 @@
 
 #include "../DataTypes/data_types.h"
 #include <curl/curl.h>
+#include <map>
 #include <string>
 
-// TODO: Set URL with given pollutant and date range (remove hardcoded addresses)
+// TODO: Set URL with given pollutant and date range (remove hardcoded
+// addresses)
+
+// Forward declarations
+class DataScraperTestFixture;
 
 /// @brief Fetches data from the given URL
 class DataScraper {
@@ -24,8 +29,8 @@ public:
   /// @brief Collects the data from an given URL (website)
   void FetchData();
 
-  /// @brief Set the URL from which data should be fetched
-  void SetUrl(const std::string &url);
+  /// @brief Set the type of pollutant to fetch from the URL
+  void SetPollutant(const Pollutant &pollutant);
 
   /// @brief Sets the date span for data collection
   void SetDate(const std::string &from, const std::string &to);
@@ -33,19 +38,34 @@ public:
   /// @brief Get the data acquired from the given URL
   [[nodiscard]] const std::string &GetFetchedData() const;
 
-private:
+  // Protected for testing purposes
+protected:
+  static std::size_t WriteCallback(void *contents, std::size_t size,
+                                   std::size_t nmemb, void *userp);
+  void CreateUrl();
+  std::string GetTodaysDate();
   void FetchDataFromUrl();
-  static std::size_t WriteCallback(void *contents, size_t size, size_t nmemb,
-                                   void *userp);
+  void SetUrl(const std::string &url);
+  std::string GetUrl() { return url_; }
+
+private:
   UrlComponents url_components_;
   CURL *curl_{nullptr};
   CURLcode res_;
+
+  Pollutant pollutant_{Pollutant::UNKNOWN};
+
   std::string url_{""};
   std::string fetched_data_{""};
+  std::string date_from_{""};
+  std::string date_to_{""};
+  std::string todays_date_{""};
 
-  // For testing
-protected:
-  std::string GetUrl() { return url_; }
+  std::map<Pollutant, std::string> pollutant_values_{
+      {Pollutant::UNKNOWN, "0"},
+      {Pollutant::CARBON_MONOXIDE, "3"},
+      {Pollutant::OZONE, "31"},
+      {Pollutant::BENZEN, "32"}};
 };
 
 #endif // AIRQUALITYAPP_DATA_SCRAPER_H

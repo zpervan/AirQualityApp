@@ -54,7 +54,7 @@ TEST_F(
 }
 
 TEST_F(DataScraperTestFixture,
-       GivenDateTime_WhenSettingDate_ThenValidUrlWithDateSet) {
+       GivenValidPollutantAndDate_WhenSetting_ThenUrlWithValidPollutantAndDateSet) {
 
   const std::string expected_url{"http://iszz.azo.hr/iskzl/rs/podatak/export/"
                                  "json?postaja=160&polutant=3&tipPodatka=0&"
@@ -64,6 +64,9 @@ TEST_F(DataScraperTestFixture,
   const std::string date_to{"03.04.2020"};
 
   SetDate(date_from, date_to);
+  SetPollutant(Pollutant::CARBON_MONOXIDE);
+
+  CreateUrl();
 
   const std::string actual_url = GetUrl();
 

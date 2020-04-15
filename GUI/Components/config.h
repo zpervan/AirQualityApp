@@ -49,7 +49,7 @@ static std::vector<AirQualityMeasurement> air_quality_measurements{};
 static std::string last_fetch{"Last update: "};
 } // namespace Utility
 
-namespace Pollutant {
+namespace Pollutants {
 static std::vector<float> carbon_monoxide_values{};
 static std::vector<float> benzene_values{};
 static std::vector<float> ozone_values{};

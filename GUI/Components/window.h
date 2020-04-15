@@ -34,7 +34,7 @@ void ShowCheckboxes() {
 
   ImGui::SetWindowSize(Config::Window::widget_window_size);
 
-  ImGui::Checkbox("FetchData?", &Config::DataFetching::enable_data_fetching);
+  ImGui::Checkbox("Fetch data?", &Config::DataFetching::enable_data_fetching);
 
   ImGui::Text("Select data to visualize:");
   ImGui::Checkbox(" Carbon Monoxide (CO)",
@@ -64,14 +64,14 @@ void ShowCarbonMonoxide() {
 
   ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
 
-  ImGui::PlotHistogram("Histogram", Pollutant::carbon_monoxide_values.data(),
-                       Pollutant::carbon_monoxide_values.size(), 100.f, nullptr,
+  ImGui::PlotHistogram("Histogram", Pollutants::carbon_monoxide_values.data(),
+      Pollutants::carbon_monoxide_values.size(), 100.f, nullptr,
                        Config::Plot::carbon_monoxide_minmax_scaling.first,
                        Config::Plot::carbon_monoxide_minmax_scaling.second,
                        ImVec2(350, 120));
 
   ImGui::Text("%s",
-              (Utility::last_fetch + Pollutant::carbon_monoxide_last_fetch).c_str());
+              (Utility::last_fetch + Pollutants::carbon_monoxide_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -82,12 +82,12 @@ void ShowBenzene() {
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
   ImGui::PlotHistogram(
-      "Histogram", Pollutant::benzene_values.data(),
-                       Pollutant::benzene_values.size(), 1.f,
+      "Histogram", Pollutants::benzene_values.data(),
+                       Pollutants::benzene_values.size(), 1.f,
       nullptr, Config::Plot::benzene_minmax_scaling.first,
       Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Pollutant::benzene_last_fetch).c_str());
+  ImGui::Text("%s", (Utility::last_fetch + Pollutants::benzene_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -98,12 +98,12 @@ void ShowOzone() {
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
   ImGui::PlotHistogram(
-      "Histogram", Pollutant::ozone_values.data(),
-                       Pollutant::ozone_values.size(), 1.f,
+      "Histogram", Pollutants::ozone_values.data(),
+                       Pollutants::ozone_values.size(), 1.f,
       nullptr, Config::Plot::ozone_minmax_scaling.first,
       Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Pollutant::ozone_last_fetch).c_str());
+  ImGui::Text("%s", (Utility::last_fetch + Pollutants::ozone_last_fetch).c_str());
 
   ImGui::End();
 }
