@@ -24,7 +24,7 @@ void ProcessData() {
   while (true) {
     if (!Config::DataFetching::enable_data_fetching) {
       std::cout << "Data fetching is disabled." << std::endl;
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      std::this_thread::sleep_for(std::chrono::milliseconds(5000));
       continue;
     }
 
@@ -38,9 +38,13 @@ void ProcessData() {
       ProcessOzone();
 
     std::cout << "Processing DONE!" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
   }
 }
+
+// Forward declarations
+bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
+                        const Pollutant &pollutant);
 
 void ProcessCarbonMonoxide() {
 
@@ -48,9 +52,13 @@ void ProcessCarbonMonoxide() {
 
   Utility::sDataScraper->SetPollutant(Pollutant::CARBON_MONOXIDE);
   Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->GetFetchedData();
+  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  Utility::sJsonParser->ReadData(std::move(fetched_data));
+  if (IsFetchedDataEmpty(fetched_data, Pollutant::CARBON_MONOXIDE)) {
+    return;
+  }
+
+  Utility::sJsonParser->ReadData(std::move(fetched_data->data()));
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
   Pollutants::carbon_monoxide_last_fetch =
@@ -73,12 +81,16 @@ void ProcessCarbonMonoxide() {
 void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(Pollutant::BENZEN);
+  Utility::sDataScraper->SetPollutant(Pollutant::BENZENE);
   Utility::sDataScraper->SetDate("14.04.2020", "14.04.2020");
   Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->GetFetchedData();
+  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  Utility::sJsonParser->ReadData(fetched_data.data());
+  if (IsFetchedDataEmpty(fetched_data, Pollutant::BENZENE)) {
+    return;
+  }
+
+  Utility::sJsonParser->ReadData(fetched_data->data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
   Pollutants::benzene_last_fetch =
@@ -102,9 +114,13 @@ void ProcessOzone() {
 
   Utility::sDataScraper->SetPollutant(Pollutant::OZONE);
   Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->GetFetchedData();
+  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  Utility::sJsonParser->ReadData(fetched_data.data());
+  if (IsFetchedDataEmpty(fetched_data, Pollutant::OZONE)) {
+    return;
+  }
+
+  Utility::sJsonParser->ReadData(fetched_data->data());
   Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
 
   Pollutants::ozone_values.resize(0);
@@ -137,6 +153,32 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
   (min_element - 1) < 0 ? min_element = 0 : min_element -= 1.f;
 
   return {min_element, max_element};
+}
+
+std::string PollutantAsString(const Pollutant &pollutant) {
+  switch (pollutant) {
+  case Pollutant::UNKNOWN:
+    return "Unknown";
+  case Pollutant::CARBON_MONOXIDE:
+    return "Carbon Monoxide";
+  case Pollutant::BENZENE:
+    return "Benzene";
+  case Pollutant::OZONE:
+    return "Ozone";
+  }
+}
+
+bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
+                        const Pollutant &pollutant) {
+
+  if (!fetched_data.has_value()) {
+    const std::string pollutant_string = PollutantAsString(pollutant);
+    std::cerr << "Fetched " + pollutant_string +
+                     " data is empty! No internet connection or bad API call.s"
+              << std::endl;
+    return true;
+  }
+  return false;
 }
 
 #endif // AIRQUALITYAPP_PROCESS_DATA_H

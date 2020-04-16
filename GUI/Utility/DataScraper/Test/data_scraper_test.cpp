@@ -22,8 +22,8 @@ TEST_F(DataScraperTestFixture,
   SetUrl("NotGood.what");
   FetchData();
 
-  ASSERT_FALSE(GetFetchedData().empty());
-  EXPECT_EQ(GetFetchedData(), "No valid data found");
+  ASSERT_FALSE(TryGetFetchedData().empty());
+  EXPECT_EQ(TryGetFetchedData(), "No valid data found");
 }
 
 TEST_F(DataScraperTestFixture,
@@ -32,8 +32,8 @@ TEST_F(DataScraperTestFixture,
   SetUrl(default_url_);
   FetchData();
 
-  ASSERT_FALSE(GetFetchedData().empty());
-  EXPECT_NE(GetFetchedData(), "No valid data found");
+  ASSERT_FALSE(TryGetFetchedData().empty());
+  EXPECT_NE(TryGetFetchedData(), "No valid data found");
 }
 
 TEST_F(
@@ -44,13 +44,13 @@ TEST_F(
   SetUrl(default_url_);
   FetchData();
 
-  ASSERT_FALSE(GetFetchedData().empty());
-  EXPECT_EQ(expected_size, GetFetchedData().size());
+  ASSERT_FALSE(TryGetFetchedData().empty());
+  EXPECT_EQ(expected_size, TryGetFetchedData().size());
 
   FetchData();
 
-  ASSERT_FALSE(GetFetchedData().empty());
-  EXPECT_EQ(expected_size, GetFetchedData().size());
+  ASSERT_FALSE(TryGetFetchedData().empty());
+  EXPECT_EQ(expected_size, TryGetFetchedData().size());
 }
 
 TEST_F(DataScraperTestFixture,

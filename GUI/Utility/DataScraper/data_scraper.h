@@ -14,12 +14,6 @@
 #include <map>
 #include <string>
 
-// TODO: Set URL with given pollutant and date range (remove hardcoded
-// addresses)
-
-// Forward declarations
-class DataScraperTestFixture;
-
 /// @brief Fetches data from the given URL
 class DataScraper {
 public:
@@ -36,27 +30,30 @@ public:
   void SetDate(const std::string &from, const std::string &to);
 
   /// @brief Get the data acquired from the given URL
-  [[nodiscard]] const std::string &GetFetchedData() const;
+  [[nodiscard]] std::optional<std::string> TryGetFetchedData() const;
 
   // Protected for testing purposes
 protected:
   static std::size_t WriteCallback(void *contents, std::size_t size,
                                    std::size_t nmemb, void *userp);
-  void CreateUrl();
   std::string GetTodaysDate();
-  void FetchDataFromUrl();
-  void SetUrl(const std::string &url);
   std::string GetUrl() { return url_; }
 
+  void CreateUrl();
+  void FetchDataFromUrl();
+  void SetUrl(const std::string &url);
+
 private:
+  const std::string empty_fetched_data_{"[]"};
   UrlComponents url_components_;
   CURL *curl_{nullptr};
   CURLcode res_;
 
   Pollutant pollutant_{Pollutant::UNKNOWN};
 
+  std::optional<std::string> fetched_data_{""};
+
   std::string url_{""};
-  std::string fetched_data_{""};
   std::string date_from_{""};
   std::string date_to_{""};
   std::string todays_date_{""};
@@ -65,7 +62,7 @@ private:
       {Pollutant::UNKNOWN, "0"},
       {Pollutant::CARBON_MONOXIDE, "3"},
       {Pollutant::OZONE, "31"},
-      {Pollutant::BENZEN, "32"}};
+      {Pollutant::BENZENE, "32"}};
 };
 
 #endif // AIRQUALITYAPP_DATA_SCRAPER_H

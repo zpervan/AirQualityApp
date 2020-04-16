@@ -15,14 +15,14 @@ void DataScraper::FetchData() {
   if (curl_) {
     FetchDataFromUrl();
 
-    if (fetched_data_.empty()) {
+    if (fetched_data_->empty()) {
       fetched_data_ = "No valid data found";
     }
   }
 }
 
 void DataScraper::FetchDataFromUrl() {
-  fetched_data_.clear();
+  fetched_data_->clear();
 
   curl_easy_setopt(curl_, CURLOPT_URL, url_.c_str());
   curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -34,7 +34,9 @@ void DataScraper::FetchDataFromUrl() {
 
 void DataScraper::SetUrl(const std::string &url) { url_ = url; }
 
-const std::string &DataScraper::GetFetchedData() const { return fetched_data_; }
+std::optional<std::string> DataScraper::TryGetFetchedData() const {
+  return (fetched_data_ == empty_fetched_data_) ? std::nullopt : fetched_data_;
+}
 
 std::size_t DataScraper::WriteCallback(void *contents, size_t size,
                                        size_t nmemb, void *userp) {
