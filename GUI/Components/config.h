@@ -24,6 +24,8 @@ namespace Window {
 static std::pair<uint16_t, uint16_t> main_window_size{1280, 720};
 static ImVec2 widget_window_size{200.f, 300.f};
 
+static ImGuiComboFlags combo_flags = 0;
+
 static bool enable_carbon_monoxide{false};
 static bool enable_benzene{false};
 static bool enable_ozone{false};
@@ -48,15 +50,5 @@ static std::unique_ptr<JsonParser> sJsonParser = std::make_unique<JsonParser>();
 static std::vector<AirQualityMeasurement> air_quality_measurements{};
 static std::string last_fetch{"Last update: "};
 } // namespace Utility
-
-namespace Pollutants {
-static std::vector<float> carbon_monoxide_values{};
-static std::vector<float> benzene_values{};
-static std::vector<float> ozone_values{};
-
-static std::string carbon_monoxide_last_fetch{"Not yet fetched"};
-static std::string benzene_last_fetch{"Not yet fetched"};
-static std::string ozone_last_fetch{"Not yet fetched"};
-} // namespace Pollutant
 
 #endif // AIRQUALITYAPP_CONFIG_H

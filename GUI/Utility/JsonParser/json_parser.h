@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-// TODO: Epoch conversion to date should be done here
-
 /// @brief Parses the fetched JSON file and assigns the values with the
 /// appropriate data.
 /// @attention There should be only one instance of this object!
@@ -34,8 +32,6 @@ private:
   void RemoveRedundantCharacters();
   void ReplaceSpecialCharacters();
   void AssignAirParametersValues();
-  std::pair<std::time_t, std::string>
-  ConvertFromEpochToStandardTime(std::string &epoch_time);
 
   std::vector<AirQualityMeasurement> air_quality_measurements_;
   std::string data_buffer_{""};

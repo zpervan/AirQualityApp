@@ -6,6 +6,7 @@
 #define AIRQUALITYAPP_PROCESS_DATA_H
 
 #include "config.h"
+#include "data.h"
 
 #include <algorithm>
 #include <chrono>
@@ -44,17 +45,17 @@ void ProcessData() {
 
 // Forward declarations
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const Pollutant &pollutant);
+                        const DataTypes::Pollutant &pollutant);
 
 void ProcessCarbonMonoxide() {
 
   std::cout << "Processing CO data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(Pollutant::CARBON_MONOXIDE);
+  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::CARBON_MONOXIDE);
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, Pollutant::CARBON_MONOXIDE)) {
+  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::CARBON_MONOXIDE)) {
     return;
   }
 
@@ -81,12 +82,12 @@ void ProcessCarbonMonoxide() {
 void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(Pollutant::BENZENE);
+  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::BENZENE);
   Utility::sDataScraper->SetDate("14.04.2020", "14.04.2020");
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, Pollutant::BENZENE)) {
+  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::BENZENE)) {
     return;
   }
 
@@ -112,11 +113,11 @@ void ProcessBenzene() {
 void ProcessOzone() {
   std::cout << "Processing Ozone data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(Pollutant::OZONE);
+  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::OZONE);
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, Pollutant::OZONE)) {
+  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::OZONE)) {
     return;
   }
 
@@ -155,27 +156,28 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
   return {min_element, max_element};
 }
 
-std::string PollutantAsString(const Pollutant &pollutant) {
+std::string PollutantAsString(const DataTypes::Pollutant &pollutant) {
   switch (pollutant) {
-  case Pollutant::UNKNOWN:
-    return "Unknown";
-  case Pollutant::CARBON_MONOXIDE:
+  case DataTypes::Pollutant::CARBON_MONOXIDE:
     return "Carbon Monoxide";
-  case Pollutant::BENZENE:
+  case DataTypes::Pollutant::BENZENE:
     return "Benzene";
-  case Pollutant::OZONE:
+  case DataTypes::Pollutant::OZONE:
     return "Ozone";
+  default:
+    return "Unknown";
   }
 }
 
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const Pollutant &pollutant) {
+                        const DataTypes::Pollutant &pollutant) {
 
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);
-    std::cerr << "Fetched " + pollutant_string +
-                     " data is empty! No internet connection or bad API call.s"
-              << std::endl;
+    std::cerr
+        << "Fetched " + pollutant_string +
+               " data is empty! No internet connection or no data available."
+        << std::endl;
     return true;
   }
   return false;

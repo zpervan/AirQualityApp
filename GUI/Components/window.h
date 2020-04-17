@@ -19,22 +19,42 @@
 namespace Window {
 
 // Forward declarations
-void ShowCheckboxes();
+void ShowDataMenu();
 void ShowHistograms();
 
 // Function definitions
 
 static void ShowWindow() {
-  ShowCheckboxes();
+  ShowDataMenu();
   ShowHistograms();
 }
 
-void ShowCheckboxes() {
+void ShowDataMenu() {
   ImGui::Begin("Data");
 
   ImGui::SetWindowSize(Config::Window::widget_window_size);
 
   ImGui::Checkbox("Fetch data?", &Config::DataFetching::enable_data_fetching);
+
+  if (Config::DataFetching::enable_data_fetching)
+  {
+    ImGui::Text("Select date:");
+
+    const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
+    static const char* item_current = items[0];
+    if (ImGui::BeginCombo("", item_current, Config::Window::combo_flags))
+    {
+      for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+      {
+        bool is_selected = (item_current == items[n]);
+        if (ImGui::Selectable(items[n], is_selected))
+          item_current = items[n];
+        if (is_selected)
+          ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
+      }
+      ImGui::EndCombo();
+    }
+  }
 
   ImGui::Text("Select data to visualize:");
   ImGui::Checkbox(" Carbon Monoxide (CO)",

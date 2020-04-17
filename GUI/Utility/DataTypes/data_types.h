@@ -6,6 +6,7 @@
 #define AIRQUALITYAPP_DATA_TYPES_H
 
 #include <ctime>
+#include <map>
 #include <string>
 
 /// @brief Parameters and values which describe air quality measurement
@@ -46,10 +47,21 @@ private:
   UrlComponents() = default;
 };
 
+// To reduce confusion, this has it's own namespace because they are lots of
+// data structures with the name "Pollutant"
+namespace DataTypes {
 enum class Pollutant {
   UNKNOWN = 0,
   CARBON_MONOXIDE = 3,
   OZONE = 32,
   BENZENE = 31
 };
+
+static std::map<Pollutant, std::string> PollutantValues{
+    {Pollutant::UNKNOWN, "0"},
+    {Pollutant::CARBON_MONOXIDE, "3"},
+    {Pollutant::OZONE, "31"},
+    {Pollutant::BENZENE, "32"}};
+} // namespace DataTypes
+
 #endif // AIRQUALITYAPP_DATA_TYPES_H

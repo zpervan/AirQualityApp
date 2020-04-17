@@ -25,6 +25,11 @@ add_library(LinearRegression
         Algorithms/linear_regression.h
         )
 
+add_library(DateTime
+        STATIC
+        DateTime/date_time.cpp
+        DateTime/date_time.h
+        )
 
 ###### TESTING ######
 add_subdirectory(ThirdParty)
@@ -51,11 +56,13 @@ set(GTest_Libs gtest gtest_main)
 target_link_libraries(DataScraperTest
         DataScraper
         ${GTest_Libs}
+        DateTime
         )
 
 target_link_libraries(JsonParserTest
         JsonParser
         ${GTest_Libs}
+        DateTime
         )
 
 target_link_libraries(LinearRegressionTest

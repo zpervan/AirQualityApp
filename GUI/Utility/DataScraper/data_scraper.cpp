@@ -3,22 +3,17 @@
 // Student: Zvonimir Pervan
 
 #include "data_scraper.h"
-
-#include <iomanip>
 #include <iostream>
-#include <sstream>
+
+#include "../DataTypes/data_types.h"
+#include "../DateTime/date_time.h"
 
 void DataScraper::FetchData() {
   CreateUrl();
 
   curl_ = curl_easy_init();
-  if (curl_) {
+  if (curl_)
     FetchDataFromUrl();
-
-    if (fetched_data_->empty()) {
-      fetched_data_ = "No valid data found";
-    }
-  }
 }
 
 void DataScraper::FetchDataFromUrl() {
@@ -31,8 +26,6 @@ void DataScraper::FetchDataFromUrl() {
   res_ = curl_easy_perform(curl_);
   curl_easy_cleanup(curl_);
 }
-
-void DataScraper::SetUrl(const std::string &url) { url_ = url; }
 
 std::optional<std::string> DataScraper::TryGetFetchedData() const {
   return (fetched_data_ == empty_fetched_data_) ? std::nullopt : fetched_data_;
@@ -49,7 +42,7 @@ void DataScraper::SetDate(const std::string &from, const std::string &to) {
   date_to_ = to;
 }
 
-void DataScraper::SetPollutant(const Pollutant &pollutant) {
+void DataScraper::SetPollutant(const DataTypes::Pollutant &pollutant) {
   pollutant_ = pollutant;
 }
 
@@ -57,25 +50,27 @@ inline bool IsCustomDateNotSet(std::string &from, const std::string &to) {
   return from.empty() || to.empty();
 }
 
+inline bool IsPollutantSet(DataTypes::Pollutant pollutant) {
+  if (pollutant == DataTypes::Pollutant::UNKNOWN) {
+    std::cerr << "Pollutant unknown! Data will not fetched." << std::endl;
+    return false;
+  }
+  return true;
+}
+
 void DataScraper::CreateUrl() {
 
+  if (!IsPollutantSet(pollutant_))
+    return;
+
   if (IsCustomDateNotSet(date_from_, date_to_)) {
-    date_from_ = date_to_ = todays_date_ = GetTodaysDate();
+    date_from_ = date_to_ = today_date_ = DateTime::GetTodayDate();
   }
 
-  const std::string pollutant = pollutant_values_[pollutant_];
+  const std::string pollutant = DataTypes::PollutantValues[pollutant_];
 
   url_ = url_components_.address + url_components_.station + "160" +
          url_components_.pollutant + pollutant + url_components_.data_type +
          "0" + url_components_.date_from + date_from_ +
          url_components_.date_to + date_to_;
-}
-
-std::string DataScraper::GetTodaysDate() {
-  std::time_t time = std::time(0);
-
-  std::ostringstream today_date;
-  today_date << std::put_time(std::localtime(&time), "%d.%m.%Y");
-
-  return {today_date.str()};
 }

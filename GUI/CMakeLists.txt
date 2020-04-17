@@ -11,6 +11,7 @@ add_library(AirQualityGui
         Components/window.h
         Components/config.h
         Components/process_data.h
+        Components/data.h
         )
 
 target_link_libraries(AirQualityGui
@@ -18,5 +19,6 @@ target_link_libraries(AirQualityGui
         DearImGui
         DataScraper
         JsonParser
+        DateTime
         pthread
         )
