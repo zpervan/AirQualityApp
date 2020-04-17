@@ -36,7 +36,7 @@ TEST_SPECS = [
 # Define a test method in GMockNCTest for each element in TEST_SPECS.
 fake_target_util.DefineNegativeCompilationTests(
     GMockMethodNCTest,
-    "google3/ThirdParty/googletest/googlemock/test/gmock-function-mocker_nc",
+    "google3/third_party/googletest/googlemock/test/gmock-function-mocker_nc",
     "gmock-function-mocker_nc.o", TEST_SPECS)
 
 if __name__ == "__main__":
