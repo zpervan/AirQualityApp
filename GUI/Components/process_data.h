@@ -21,14 +21,14 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values);
 
 void ProcessData() {
   while (true) {
-    if (!Config::DataFetching::enable_data_fetching) {
+    if (!Config::DataFetch::enable_air_measurement_fetching) {
       std::cout << "Data fetching is disabled." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(5000));
       continue;
     }
 
     std::cout << "Processing data..." << std::endl;
-    Utility::sDataScraper->SetDate(Date::current_date, Date::current_date);
+    Utility::sAirMeasurementFetcher->SetDate(Date::current_date, Date::current_date);
 
     if (Config::Window::enable_carbon_monoxide)
       ProcessCarbonMonoxide();
@@ -44,17 +44,18 @@ void ProcessData() {
 
 // Forward declarations
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const DataTypes::Pollutant &pollutant);
+                        const Mapping::Pollutant &pollutant);
 
 void ProcessCarbonMonoxide() {
 
   std::cout << "Processing CO data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::CARBON_MONOXIDE);
-  Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
+  Utility::sAirMeasurementFetcher->SetPollutant(
+      Mapping::Pollutant::CARBON_MONOXIDE);
+  Utility::sAirMeasurementFetcher->FetchData();
+  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::CARBON_MONOXIDE)) {
+  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::CARBON_MONOXIDE)) {
     return;
   }
 
@@ -81,11 +82,11 @@ void ProcessCarbonMonoxide() {
 void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::BENZENE);
-  Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
+  Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::BENZENE);
+  Utility::sAirMeasurementFetcher->FetchData();
+  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::BENZENE)) {
+  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::BENZENE)) {
     return;
   }
 
@@ -111,11 +112,11 @@ void ProcessBenzene() {
 void ProcessOzone() {
   std::cout << "Processing Ozone data..." << std::endl;
 
-  Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::OZONE);
-  Utility::sDataScraper->FetchData();
-  auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
+  Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::OZONE);
+  Utility::sAirMeasurementFetcher->FetchData();
+  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
 
-  if (IsFetchedDataEmpty(fetched_data, DataTypes::Pollutant::OZONE)) {
+  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::OZONE)) {
     return;
   }
 
@@ -154,13 +155,13 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
   return {min_element, max_element};
 }
 
-std::string PollutantAsString(const DataTypes::Pollutant &pollutant) {
+std::string PollutantAsString(const Mapping::Pollutant &pollutant) {
   switch (pollutant) {
-  case DataTypes::Pollutant::CARBON_MONOXIDE:
+  case Mapping::Pollutant::CARBON_MONOXIDE:
     return "Carbon Monoxide";
-  case DataTypes::Pollutant::BENZENE:
+  case Mapping::Pollutant::BENZENE:
     return "Benzene";
-  case DataTypes::Pollutant::OZONE:
+  case Mapping::Pollutant::OZONE:
     return "Ozone";
   default:
     return "Unknown";
@@ -168,7 +169,7 @@ std::string PollutantAsString(const DataTypes::Pollutant &pollutant) {
 }
 
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const DataTypes::Pollutant &pollutant) {
+                        const Mapping::Pollutant &pollutant) {
 
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);

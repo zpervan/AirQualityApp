@@ -1,13 +1,13 @@
 project(Utility)
 
 # Create libraries
-add_library(DataScraper
+add_library(AirMeasurementFetcher
         STATIC
-        DataScraper/data_scraper.h
-        DataScraper/data_scraper.cpp
+        AirMeasurementFetcher/air_measurement_fetcher.h
+        AirMeasurementFetcher/air_measurement_fetcher.cpp
         )
 
-target_link_libraries(DataScraper
+target_link_libraries(AirMeasurementFetcher
         PRIVATE
         curl
         )
@@ -37,8 +37,8 @@ add_subdirectory(ThirdParty)
 enable_testing()
 
 # Add test executables
-add_executable(DataScraperTest
-        DataScraper/Test/data_scraper_test.cpp
+add_executable(AirMeasurementFetcherTest
+        AirMeasurementFetcher/Test/air_measurement_fetcher_test.cpp
         )
 
 add_executable(DateTimeTest
@@ -54,13 +54,16 @@ add_executable(LinearRegressionTest
         )
 
 # Link libraries needed for testing
-set(GTest_Libs gtest gtest_main)
+set(GTest_Libs
+        gtest
+        gtest_main
+        )
 
 
-target_link_libraries(DataScraperTest
-        DataScraper
-        ${GTest_Libs}
+target_link_libraries(AirMeasurementFetcherTest
+        AirMeasurementFetcher
         DateTime
+        ${GTest_Libs}
         )
 
 target_link_libraries(DateTimeTest
@@ -70,8 +73,8 @@ target_link_libraries(DateTimeTest
 
 target_link_libraries(JsonParserTest
         JsonParser
-        ${GTest_Libs}
         DateTime
+        ${GTest_Libs}
         )
 
 target_link_libraries(LinearRegressionTest
@@ -81,7 +84,7 @@ target_link_libraries(LinearRegressionTest
 
 # Creates a named test suite for given tests
 add_test(TestAll
-        DataScraperTest
+        AirMeasurementFetcherTest
         DataTimeTest
         JsonParserTest
         LinearRegressionTest

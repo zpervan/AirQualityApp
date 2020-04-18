@@ -9,7 +9,10 @@
 #include <map>
 #include <string>
 
-/// @brief Parameters and values which describe air quality measurement
+// Forward declarations
+class AirMeasurementFetcher;
+
+/// @brief Parameters and values which describe an air quality measurement
 struct AirQualityMeasurement {
   float value{0.0};
   std::string unit_of_measurement{""};
@@ -29,10 +32,8 @@ inline bool operator==(const AirQualityMeasurement &lhs,
          (lhs.standard_time == rhs.standard_time);
 }
 
-class DataScraper;
-
-/// @brief Url components from which the API URL is made of
-/// @attention This should be only visible to the DataScraper class
+/// @brief URL components from which the air quality measurement URL is made of
+/// @attention This should be only visible to the AirMeasurementFetcher class
 struct UrlComponents {
 public:
   const std::string address{"http://iszz.azo.hr/iskzl/rs/podatak/export/json?"};
@@ -43,13 +44,15 @@ public:
   const std::string date_to{"&vrijemeDo="};
 
 private:
-  friend class DataScraper;
+  friend class AirMeasurementFetcher;
   UrlComponents() = default;
 };
 
-// To reduce confusion, this has it's own namespace because they are lots of
-// data structures with the name "Pollutant"
-namespace DataTypes {
+/// @brief Data types for pollutant classification and mapping
+/// @attention To reduce confusion, this has it's own namespace because they are
+/// multiple data and data structures with the name "Pollutant" in it.
+namespace Mapping {
+
 enum class Pollutant {
   UNKNOWN = 0,
   CARBON_MONOXIDE = 3,
@@ -62,6 +65,7 @@ static std::map<Pollutant, std::string> PollutantValues{
     {Pollutant::CARBON_MONOXIDE, "3"},
     {Pollutant::OZONE, "31"},
     {Pollutant::BENZENE, "32"}};
-} // namespace DataTypes
+
+} // namespace Mapping
 
 #endif // AIRQUALITYAPP_DATA_TYPES_H

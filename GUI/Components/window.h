@@ -5,12 +5,11 @@
 #ifndef AIRQUALITYAPP_WINDOW_H
 #define AIRQUALITYAPP_WINDOW_H
 
-#include "../Components/config.h"
-#include "../Utility/DataScraper/data_scraper.h"
+#include "../Utility/AirMeasurementFetcher/air_measurement_fetcher.h"
 #include "../Utility/JsonParser/json_parser.h"
 #include "../Utility/ThirdParty/DearImgui/imgui.h"
-
 #include "config.h"
+
 #include <algorithm>
 #include <cstdio>
 #include <thread>
@@ -37,14 +36,16 @@ void ShowDataMenu() {
 
   ImGui::SetWindowSize(Config::Window::widget_window_size);
 
-  ImGui::Checkbox("Fetch data?", &Config::DataFetching::enable_data_fetching);
+  ImGui::Checkbox("Fetch data?",
+                  &Config::DataFetch::enable_air_measurement_fetching);
 
-  if (Config::DataFetching::enable_data_fetching) {
+  if (Config::DataFetch::enable_air_measurement_fetching) {
     ShowDateComboBox();
   }
 
   ImGui::Text("Select data to visualize:");
-  ImGui::Checkbox(" Carbon Monoxide (CO)", &Config::Window::enable_carbon_monoxide);
+  ImGui::Checkbox(" Carbon Monoxide (CO)",
+                  &Config::Window::enable_carbon_monoxide);
   ImGui::Checkbox(" Benzene", &Config::Window::enable_benzene);
   ImGui::Checkbox(" Ozone (O3)", &Config::Window::enable_ozone);
 
@@ -76,12 +77,9 @@ void ShowDateComboBox() {
 }
 
 void ShowHistograms() {
-  if (Config::Window::enable_carbon_monoxide)
-    ShowCarbonMonoxide();
-  if (Config::Window::enable_benzene)
-    ShowBenzene();
-  if (Config::Window::enable_ozone)
-    ShowOzone();
+  if (Config::Window::enable_carbon_monoxide) ShowCarbonMonoxide();
+  if (Config::Window::enable_benzene) ShowBenzene();
+  if (Config::Window::enable_ozone) ShowOzone();
 }
 
 void ShowCarbonMonoxide() {

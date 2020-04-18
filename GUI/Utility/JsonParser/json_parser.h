@@ -12,20 +12,18 @@
 #include <string>
 #include <vector>
 
-/// @brief Parses the fetched JSON file and assigns the values with the
-/// appropriate data.
-/// @attention There should be only one instance of this object!
+/// @brief Parses the air measurement JSON file and assigns the parsed values to
+/// the appropriate data.
 class JsonParser {
 public:
-  JsonParser() = default;
-
-  /// @brief Fills JsonParser's data buffer with the fetched JSON data
-  /// @param data JSON data
+  /// @brief Fills JsonParser's data buffer with the fetched air measurement
+  /// JSON data.
+  /// @param data Fetched air measurements data in JSON format
   void ReadData(std::string &&data);
 
-  /// @brief Parses the given fetched JSON data and fills the
-  /// AirQualityMeasurement data structure with appropriate data
-  /// @return Returns a valid vector of type AirQualityMeasurement
+  /// @brief Parses the given fetched air measurement data and fills the
+  /// AirQualityMeasurement data structure with the appropriate values
+  /// @return Returns a valid vector with assigned AirQualityMeasurement data
   std::optional<std::vector<AirQualityMeasurement>> Parse();
 
 private:
@@ -37,11 +35,10 @@ private:
   std::string data_buffer_{""};
   std::array<char, 5> redundant_characters{{'[', '{', '}', ']', '\"'}};
 
-  /// @section For testing purposes
+  // For testing purposes
 protected:
-  [[nodiscard]] const std::string &GetDataBuffer() const;
-  [[nodiscard]] const std::vector<AirQualityMeasurement> &
-  GetAirQualityMeasurements() const;
+  const std::string &GetDataBuffer() const;
+  const std::vector<AirQualityMeasurement> &GetAirQualityMeasurements() const;
 };
 
 #endif // AIRQUALITYAPP_JSON_PARSER_H

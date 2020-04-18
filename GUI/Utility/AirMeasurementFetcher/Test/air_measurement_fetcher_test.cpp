@@ -2,15 +2,16 @@
 // Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-#include "../data_scraper.h"
+#include "../air_measurement_fetcher.h"
 
 #include <gtest/gtest.h>
 #include <memory>
 
-class DataScraperTestFixture : protected DataScraper, public ::testing::Test {
+class AirMeasurementFetcherTestFixture : protected AirMeasurementFetcher,
+                                         public ::testing::Test {
 protected:
-  DataScraperTestFixture() = default;
-  ~DataScraperTestFixture() = default;
+  AirMeasurementFetcherTestFixture() = default;
+  ~AirMeasurementFetcherTestFixture() = default;
 
   const std::string default_date_from_{"01.02.2020"};
   const std::string default_date_to_{"03.04.2020"};
@@ -20,10 +21,10 @@ protected:
       "vrijemeOd=01.02.2020&vrijemeDo=03.04.2020"};
 };
 
-TEST_F(DataScraperTestFixture,
+TEST_F(AirMeasurementFetcherTestFixture,
        GivenValidPollutant_WhenSetting_ThenUrlWithValidPollutantAndDateSet) {
 
-  SetPollutant(DataTypes::Pollutant::CARBON_MONOXIDE);
+  SetPollutant(Mapping::Pollutant::CARBON_MONOXIDE);
 
   CreateUrl();
 
@@ -42,11 +43,11 @@ TEST_F(DataScraperTestFixture,
 }
 
 TEST_F(
-    DataScraperTestFixture,
+    AirMeasurementFetcherTestFixture,
     GivenValidPollutantAndDate_WhenSetting_ThenUrlWithValidPollutantAndDateSet) {
 
   SetDate(default_date_from_, default_date_to_);
-  SetPollutant(DataTypes::Pollutant::CARBON_MONOXIDE);
+  SetPollutant(Mapping::Pollutant::CARBON_MONOXIDE);
 
   CreateUrl();
 
@@ -56,27 +57,27 @@ TEST_F(
   EXPECT_EQ(default_expected_url_, actual_url);
 }
 
-TEST_F(DataScraperTestFixture,
+TEST_F(AirMeasurementFetcherTestFixture,
        GivenUrlWithoutDefinedPollutant_WhenFetchingData_ThenNoDataIsReturned) {
 
   FetchData();
 
   ASSERT_TRUE(TryGetFetchedData()->empty());
 
-  SetPollutant(DataTypes::Pollutant::UNKNOWN);
+  SetPollutant(Mapping::Pollutant::UNKNOWN);
   FetchData();
 
   ASSERT_TRUE(TryGetFetchedData()->empty());
 }
 
 TEST_F(
-    DataScraperTestFixture,
+    AirMeasurementFetcherTestFixture,
     GivenValidUrl_WhenFetchingDataMulipleTimes_ThenFetchedDataIsNotAppended) {
 
   const std::size_t expected_size = 1633;
   const std::string date{"04.04.2020"};
 
-  SetPollutant(DataTypes::Pollutant::CARBON_MONOXIDE);
+  SetPollutant(Mapping::Pollutant::CARBON_MONOXIDE);
   SetDate(date, date);
 
   FetchData();
