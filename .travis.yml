@@ -8,12 +8,13 @@ os:
   - linux
 
 before install:
-  - sudo apt update -qq
+  - sudo chmod 755 Scripts/install.sh Scripts/run_tests.sh
 
 install:
-  - sudo apt install -y libcurl4-openssl-dev libglew-dev libglfw3-dev libglfw3
+  - sudo ./Scripts/install.sh
 
 script:
-  - cmake .
-  - make
+  - mkdir build && cd build && cmake .. && make
 
+after_script:
+  - cd .. && ./Scripts/run_tests.sh
