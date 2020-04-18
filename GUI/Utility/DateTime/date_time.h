@@ -12,16 +12,18 @@
 
 namespace DateTime {
 
-using DateFormats = std::vector<std::pair<std::string, std::string>>;
-using DateFormat = std::pair<std::string, std::string>;
+using DMY = std::string;
+using MDY = std::string;
+using DateFormat = std::pair<DMY, MDY>;
+using DateFormats = std::vector<DateFormat>;
 
-std::string GetTodayDate();
+std::pair<std::time_t, std::string> GetTodayDate();
 
 std::optional<std::pair<std::time_t, std::string>>
 ConvertFromEpochToStandardTime(std::string &epoch_time);
 
-DateFormats PopulateDates(const std::size_t range,
-                          const std::time_t from_date = 0);
+DateFormats PopulateDates(std::size_t range, std::time_t from_date = 0);
+
 } // namespace DateTime
 
 #endif // AIRQUALITYAPP_DATE_TIME_H

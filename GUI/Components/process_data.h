@@ -12,8 +12,6 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
-// TODO: No resize in every iteration!!
-// TODO: Initial data fetching (before the counter triggers)
 
 // Forward declarations
 void ProcessCarbonMonoxide();
@@ -30,6 +28,7 @@ void ProcessData() {
     }
 
     std::cout << "Processing data..." << std::endl;
+    Utility::sDataScraper->SetDate(Date::current_date, Date::current_date);
 
     if (Config::Window::enable_carbon_monoxide)
       ProcessCarbonMonoxide();
@@ -83,7 +82,6 @@ void ProcessBenzene() {
   std::cout << "Processing Benzene data..." << std::endl;
 
   Utility::sDataScraper->SetPollutant(DataTypes::Pollutant::BENZENE);
-  Utility::sDataScraper->SetDate("14.04.2020", "14.04.2020");
   Utility::sDataScraper->FetchData();
   auto fetched_data = Utility::sDataScraper->TryGetFetchedData();
 
@@ -174,10 +172,7 @@ bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
 
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);
-    std::cerr
-        << "Fetched " + pollutant_string +
-               " data is empty! No internet connection or no data available."
-        << std::endl;
+    std::cerr << "Fetched " + pollutant_string + " data is empty!" << std::endl;
     return true;
   }
   return false;

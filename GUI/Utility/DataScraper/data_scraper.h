@@ -27,15 +27,15 @@ public:
   void SetDate(const std::string &from, const std::string &to);
 
   /// @brief Get the data acquired from the given URL
-  [[nodiscard]] std::optional<std::string> TryGetFetchedData() const;
+  std::optional<std::string> TryGetFetchedData();
 
   // Protected for testing purposes
 protected:
   static std::size_t WriteCallback(void *contents, std::size_t size,
                                    std::size_t nmemb, void *userp);
 
-  const std::string GetUrl() { return url_; }
-  const std::string GetTodayDate() { return today_date_; }
+  std::string GetUrl() { return url_; }
+  std::string GetTodayDate() { return today_date_; }
 
   void CreateUrl();
   void FetchDataFromUrl();

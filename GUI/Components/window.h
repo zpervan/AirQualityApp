@@ -21,9 +21,12 @@ namespace Window {
 // Forward declarations
 void ShowDataMenu();
 void ShowHistograms();
+void ShowCarbonMonoxide();
+void ShowBenzene();
+void ShowOzone();
+void ShowDateComboBox();
 
 // Function definitions
-
 static void ShowWindow() {
   ShowDataMenu();
   ShowHistograms();
@@ -36,39 +39,41 @@ void ShowDataMenu() {
 
   ImGui::Checkbox("Fetch data?", &Config::DataFetching::enable_data_fetching);
 
-  if (Config::DataFetching::enable_data_fetching)
-  {
-    ImGui::Text("Select date:");
-
-    const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
-    static const char* item_current = items[0];
-    if (ImGui::BeginCombo("", item_current, Config::Window::combo_flags))
-    {
-      for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-      {
-        bool is_selected = (item_current == items[n]);
-        if (ImGui::Selectable(items[n], is_selected))
-          item_current = items[n];
-        if (is_selected)
-          ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
-      }
-      ImGui::EndCombo();
-    }
+  if (Config::DataFetching::enable_data_fetching) {
+    ShowDateComboBox();
   }
 
   ImGui::Text("Select data to visualize:");
-  ImGui::Checkbox(" Carbon Monoxide (CO)",
-                  &Config::Window::enable_carbon_monoxide);
+  ImGui::Checkbox(" Carbon Monoxide (CO)", &Config::Window::enable_carbon_monoxide);
   ImGui::Checkbox(" Benzene", &Config::Window::enable_benzene);
   ImGui::Checkbox(" Ozone (O3)", &Config::Window::enable_ozone);
 
   ImGui::End();
 }
 
-// Forward declarations
-void ShowCarbonMonoxide();
-void ShowBenzene();
-void ShowOzone();
+void ShowDateComboBox() {
+  ImGui::Text("Select date:");
+  static const char *current_item = Date::dates.at(0).second.data();
+
+  if (ImGui::BeginCombo("", current_item, Config::Window::combo_flags)) {
+
+    for (auto &date : Date::dates) {
+
+      bool is_selected;
+      (current_item == date.second.data()) ? is_selected = true
+                                           : is_selected = false;
+
+      if (ImGui::Selectable(date.second.data(), is_selected)) {
+        Date::current_date = date.first;
+        current_item = date.second.data();
+      }
+
+      if (is_selected)
+        ImGui::SetItemDefaultFocus();
+    }
+    ImGui::EndCombo();
+  }
+}
 
 void ShowHistograms() {
   if (Config::Window::enable_carbon_monoxide)
@@ -84,14 +89,15 @@ void ShowCarbonMonoxide() {
 
   ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
 
-  ImGui::PlotHistogram("Histogram", Pollutants::carbon_monoxide_values.data(),
+  ImGui::PlotHistogram(
+      "Histogram", Pollutants::carbon_monoxide_values.data(),
       Pollutants::carbon_monoxide_values.size(), 100.f, nullptr,
-                       Config::Plot::carbon_monoxide_minmax_scaling.first,
-                       Config::Plot::carbon_monoxide_minmax_scaling.second,
-                       ImVec2(350, 120));
+      Config::Plot::carbon_monoxide_minmax_scaling.first,
+      Config::Plot::carbon_monoxide_minmax_scaling.second, ImVec2(350, 120));
 
-  ImGui::Text("%s",
-              (Utility::last_fetch + Pollutants::carbon_monoxide_last_fetch).c_str());
+  ImGui::Text(
+      "%s",
+      (Utility::last_fetch + Pollutants::carbon_monoxide_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -101,13 +107,14 @@ void ShowBenzene() {
 
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
-  ImGui::PlotHistogram(
-      "Histogram", Pollutants::benzene_values.data(),
-                       Pollutants::benzene_values.size(), 1.f,
-      nullptr, Config::Plot::benzene_minmax_scaling.first,
-      Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
+  ImGui::PlotHistogram("Histogram", Pollutants::benzene_values.data(),
+                       Pollutants::benzene_values.size(), 1.f, nullptr,
+                       Config::Plot::benzene_minmax_scaling.first,
+                       Config::Plot::benzene_minmax_scaling.second,
+                       ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Pollutants::benzene_last_fetch).c_str());
+  ImGui::Text("%s",
+              (Utility::last_fetch + Pollutants::benzene_last_fetch).c_str());
 
   ImGui::End();
 }
@@ -117,13 +124,14 @@ void ShowOzone() {
 
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
-  ImGui::PlotHistogram(
-      "Histogram", Pollutants::ozone_values.data(),
-                       Pollutants::ozone_values.size(), 1.f,
-      nullptr, Config::Plot::ozone_minmax_scaling.first,
-      Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
+  ImGui::PlotHistogram("Histogram", Pollutants::ozone_values.data(),
+                       Pollutants::ozone_values.size(), 1.f, nullptr,
+                       Config::Plot::ozone_minmax_scaling.first,
+                       Config::Plot::ozone_minmax_scaling.second,
+                       ImVec2(350, 120));
 
-  ImGui::Text("%s", (Utility::last_fetch + Pollutants::ozone_last_fetch).c_str());
+  ImGui::Text("%s",
+              (Utility::last_fetch + Pollutants::ozone_last_fetch).c_str());
 
   ImGui::End();
 }

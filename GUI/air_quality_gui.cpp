@@ -12,11 +12,17 @@
 #include <GLFW/glfw3.h>
 
 #include "Components/config.h"
+#include "Components/data.h"
 #include "Components/main_menu_bar.h"
 #include "Components/process_data.h"
 #include "Components/window.h"
 
 #include <iostream>
+
+void AirQualityGui::Setup() {
+  Date::dates = DateTime::PopulateDates(Config::Window::date_range);
+  Date::current_date = Date::dates.front().first;
+}
 
 static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);

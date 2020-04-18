@@ -27,7 +27,7 @@ void DataScraper::FetchDataFromUrl() {
   curl_easy_cleanup(curl_);
 }
 
-std::optional<std::string> DataScraper::TryGetFetchedData() const {
+std::optional<std::string> DataScraper::TryGetFetchedData() {
   return (fetched_data_ == empty_fetched_data_) ? std::nullopt : fetched_data_;
 }
 
@@ -64,7 +64,7 @@ void DataScraper::CreateUrl() {
     return;
 
   if (IsCustomDateNotSet(date_from_, date_to_)) {
-    date_from_ = date_to_ = today_date_ = DateTime::GetTodayDate();
+    date_from_ = date_to_ = today_date_ = DateTime::GetTodayDate().second;
   }
 
   const std::string pollutant = DataTypes::PollutantValues[pollutant_];

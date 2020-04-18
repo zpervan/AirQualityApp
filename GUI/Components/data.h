@@ -5,11 +5,14 @@
 #ifndef AIRQUALITYAPP_DATA_H
 #define AIRQUALITYAPP_DATA_H
 
+#include "../Utility/DateTime/date_time.h"
+
 #include <string>
 #include <vector>
 
 namespace Date {
-static std::vector<std::string> dates{""};
+static DateTime::DateFormats dates{};
+static std::string current_date{};
 }
 
 namespace Pollutants {
