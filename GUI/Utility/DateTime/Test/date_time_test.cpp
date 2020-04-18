@@ -33,6 +33,28 @@ TEST(DateTimeTest, GivenNoEpochTime_WhenConverted_TheCorrectDateReturned) {
   }
 }
 
+TEST(DateTimeTest,
+     GivenRangeToAcquireDays_WhenPopulatingDates_ThenCorrectDatesReturned) {
+
+  const std::size_t days_range = 4;
+  const std::time_t epoch_from_date = 1587213553;
+  const std::array<DateTime::DateFormat, 4> expected_populated_dates{
+      std::make_pair("18.04.2020", "04/18/2020"),
+      std::make_pair("17.04.2020", "04/17/2020"),
+      std::make_pair("16.04.2020", "04/16/2020"),
+      std::make_pair("15.04.2020", "04/15/2020")};
+
+  const auto actual_populated_dates =
+      DateTime::PopulateDates(days_range, epoch_from_date);
+
+  ASSERT_EQ(days_range, actual_populated_dates.size());
+
+  for (std::size_t i = 0; i < days_range; i++) {
+    EXPECT_EQ(expected_populated_dates.at(i),
+              actual_populated_dates.at(i));
+  }
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
