@@ -3,12 +3,15 @@
 // Student: Zvonimir Pervan
 
 #include "date_time.h"
+#include <ctime>
 #include <iostream>
+#include <stdlib.h>
 
 namespace DateTime {
 
 namespace {
 
+std::string croatia_time_zone{"TZ=Europe/Zagreb"};
 const std::size_t expected_epoch_data_size = 13;
 
 inline bool IsEpochDataValid(const std::string &epoch_time) {
@@ -49,7 +52,9 @@ inline DateFormat SplitDateStringIntoFormats(std::string &&dates_string) {
 } // namespace
 
 std::pair<std::time_t, std::string> GetTodayDate() {
-  std::time_t time = std::time(0);
+  std::time_t time = std::time(nullptr);
+
+  putenv(croatia_time_zone.data());
 
   std::ostringstream today_date;
   today_date << std::put_time(std::localtime(&time), "%d.%m.%Y");
@@ -58,7 +63,7 @@ std::pair<std::time_t, std::string> GetTodayDate() {
 }
 
 std::optional<std::pair<std::time_t, std::string>>
-ConvertFromEpochToStandardTime(std::string &epoch_time) {
+TryConvertFromEpochToStandardTime(std::string &epoch_time) {
 
   if (!IsEpochDataValid(epoch_time))
     return std::nullopt;
@@ -68,9 +73,11 @@ ConvertFromEpochToStandardTime(std::string &epoch_time) {
   epoch_time.resize(10);
   std::time_t epoch_time_t = std::stoll(epoch_time);
 
+  putenv(croatia_time_zone.data());
+
   std::ostringstream standard_time;
   standard_time << std::put_time(std::localtime(&epoch_time_t),
-                                 "%m/%d/%Y %H:%M");
+                                 "%m/%d/%Y %H:%M %Z");
 
   return std::make_pair(epoch_time_t, standard_time.str());
 }

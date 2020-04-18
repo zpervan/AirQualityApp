@@ -15,6 +15,4 @@ install:
 
 script:
   - mkdir build && cd build && cmake .. && make
-
-after_script:
   - cd .. && ./Scripts/run_tests.sh

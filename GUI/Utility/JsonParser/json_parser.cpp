@@ -55,7 +55,7 @@ void JsonParser::AssignAirParametersValues() {
       air_quality_data.unit_of_measurement = value;
     if (key == "vrijeme") { // time
       auto [epoch_time, standard_time] =
-          DateTime::ConvertFromEpochToStandardTime(value).value();
+          DateTime::TryConvertFromEpochToStandardTime(value).value();
 
       air_quality_data.epoch_time = epoch_time;
       air_quality_data.standard_time = standard_time;
