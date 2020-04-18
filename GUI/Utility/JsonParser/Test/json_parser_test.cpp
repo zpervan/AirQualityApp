@@ -2,10 +2,6 @@
 // Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-/*********************************************************************/
-/** Epoch conversion validated with https://www.epochconverter.com/ **/
-/*********************************************************************/
-
 #include <gtest/gtest.h>
 
 #include "../../DataTypes/data_types.h"
@@ -97,7 +93,7 @@ TEST_F(
     JsonParserTestFixture,
     GivenValidAirQualityMeasurements_WhenDataIsParsed_ThenValidMeasurementsAreAssigned) {
   std::string fetched_data{
-      R"([{"vrijednost":0.1,"mjernaJedinica":"mg/m3-1","vrijeme":11111111111},{"vrijednost":0.2,"mjernaJedinica":"mg/m3-2","vrijeme":22222222222}, {"vrijednost":0.3,"mjernaJedinica":"mg/m3-3","vrijeme":33333333333}])"};
+      R"([{"vrijednost":0.1,"mjernaJedinica":"mg/m3-1","vrijeme":1111111111111},{"vrijednost":0.2,"mjernaJedinica":"mg/m3-2","vrijeme":2222222222222}, {"vrijednost":0.3,"mjernaJedinica":"mg/m3-3","vrijeme":3333333333333}])"};
 
   ReadData(std::move(fetched_data));
 

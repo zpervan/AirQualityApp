@@ -12,6 +12,12 @@ target_link_libraries(DataScraper
         curl
         )
 
+add_library(DateTime
+        STATIC
+        DateTime/date_time.h
+        DateTime/date_time.cpp
+        )
+
 add_library(JsonParser
         STATIC
         JsonParser/json_parser.cpp
@@ -25,12 +31,6 @@ add_library(LinearRegression
         Algorithms/linear_regression.h
         )
 
-add_library(DateTime
-        STATIC
-        DateTime/date_time.cpp
-        DateTime/date_time.h
-        )
-
 ###### TESTING ######
 add_subdirectory(ThirdParty)
 
@@ -39,6 +39,10 @@ enable_testing()
 # Add test executables
 add_executable(DataScraperTest
         DataScraper/Test/data_scraper_test.cpp
+        )
+
+add_executable(DateTimeTest
+        DateTime/Test/date_time_test.cpp
         )
 
 add_executable(JsonParserTest
@@ -59,6 +63,11 @@ target_link_libraries(DataScraperTest
         DateTime
         )
 
+target_link_libraries(DateTimeTest
+        DateTime
+        ${GTest_Libs}
+        )
+
 target_link_libraries(JsonParserTest
         JsonParser
         ${GTest_Libs}
@@ -73,6 +82,7 @@ target_link_libraries(LinearRegressionTest
 # Creates a named test suite for given tests
 add_test(TestAll
         DataScraperTest
+        DataTimeTest
         JsonParserTest
         LinearRegressionTest
         )

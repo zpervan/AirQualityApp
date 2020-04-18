@@ -6,13 +6,17 @@
 #define AIRQUALITYAPP_DATE_TIME_H
 
 #include <iomanip>
+#include <optional>
 #include <string>
+#include <vector>
 
 namespace DateTime {
 std::string GetTodayDate();
 
-std::pair<std::time_t, std::string>
+std::optional<std::pair<std::time_t, std::string>>
 ConvertFromEpochToStandardTime(std::string &epoch_time);
+
+std::vector<std::string> PopulateDates();
 } // namespace DateTime
 
 #endif // AIRQUALITYAPP_DATE_TIME_H
