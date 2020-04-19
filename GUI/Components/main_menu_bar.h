@@ -9,11 +9,11 @@
 #include "config.h"
 
 namespace Menu {
+
 static void ShowMainMenuBar() {
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("Window")) {
-      if (ImGui::MenuItem("About")) {
-      }
+      ImGui::MenuItem("About", nullptr, &Config::Window::show_about_window);
       ImGui::Separator();
       if (ImGui::MenuItem("Exit", "Alt+F4")) {
         Config::Window::exit_application = true;

@@ -24,11 +24,14 @@ void ShowCarbonMonoxide();
 void ShowBenzene();
 void ShowOzone();
 void ShowDateComboBox();
+void ShowAboutWindow();
 
 // Function definitions
 static void ShowWindow() {
   ShowDataMenu();
   ShowHistograms();
+  if (Config::Window::show_about_window)
+    ShowAboutWindow();
 }
 
 void ShowDataMenu() {
@@ -77,9 +80,12 @@ void ShowDateComboBox() {
 }
 
 void ShowHistograms() {
-  if (Config::Window::enable_carbon_monoxide) ShowCarbonMonoxide();
-  if (Config::Window::enable_benzene) ShowBenzene();
-  if (Config::Window::enable_ozone) ShowOzone();
+  if (Config::Window::enable_carbon_monoxide)
+    ShowCarbonMonoxide();
+  if (Config::Window::enable_benzene)
+    ShowBenzene();
+  if (Config::Window::enable_ozone)
+    ShowOzone();
 }
 
 void ShowCarbonMonoxide() {
@@ -105,11 +111,10 @@ void ShowBenzene() {
 
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
-  ImGui::PlotHistogram("", Pollutants::benzene_values.data(),
-                       Pollutants::benzene_values.size(), 1.f, nullptr,
-                       Config::Plot::benzene_minmax_scaling.first,
-                       Config::Plot::benzene_minmax_scaling.second,
-                       ImVec2(350, 120));
+  ImGui::PlotHistogram(
+      "", Pollutants::benzene_values.data(), Pollutants::benzene_values.size(),
+      1.f, nullptr, Config::Plot::benzene_minmax_scaling.first,
+      Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
 
   ImGui::Text("%s",
               (Utility::last_fetch + Pollutants::benzene_last_fetch).c_str());
@@ -122,15 +127,24 @@ void ShowOzone() {
 
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
-  ImGui::PlotHistogram("", Pollutants::ozone_values.data(),
-                       Pollutants::ozone_values.size(), 1.f, nullptr,
-                       Config::Plot::ozone_minmax_scaling.first,
-                       Config::Plot::ozone_minmax_scaling.second,
-                       ImVec2(350, 120));
+  ImGui::PlotHistogram(
+      "", Pollutants::ozone_values.data(), Pollutants::ozone_values.size(), 1.f,
+      nullptr, Config::Plot::ozone_minmax_scaling.first,
+      Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
 
   ImGui::Text("%s",
               (Utility::last_fetch + Pollutants::ozone_last_fetch).c_str());
 
+  ImGui::End();
+}
+
+void ShowAboutWindow() {
+  ImGui::Begin("About", &Config::Window::show_about_window);
+  ImGui::Text("Air Quality Monitor");
+  ImGui::Separator();
+  ImGui::Text(
+      "This application show the air quality data for Croatian cities.");
+  ImGui::Text("Currently, it only supports the air quality data for Osijek");
   ImGui::End();
 }
 
