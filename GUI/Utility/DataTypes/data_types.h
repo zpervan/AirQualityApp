@@ -55,16 +55,19 @@ namespace Mapping {
 
 enum class Pollutant {
   UNKNOWN = 0,
+  NITROGEN_DIOXIDE = 1,
+  SULFUR_DIOXIDE = 2,
   CARBON_MONOXIDE = 3,
   OZONE = 32,
-  BENZENE = 31
+  BENZENE = 31,
+  TEMPERATURE = 475
 };
 
 static std::map<Pollutant, std::string> PollutantValues{
-    {Pollutant::UNKNOWN, "0"},
-    {Pollutant::CARBON_MONOXIDE, "3"},
-    {Pollutant::OZONE, "31"},
-    {Pollutant::BENZENE, "32"}};
+    {Pollutant::UNKNOWN, "0"},        {Pollutant::NITROGEN_DIOXIDE, "1"},
+    {Pollutant::SULFUR_DIOXIDE, "2"}, {Pollutant::CARBON_MONOXIDE, "3"},
+    {Pollutant::OZONE, "31"},         {Pollutant::BENZENE, "32"},
+    {Pollutant::TEMPERATURE, "475"}};
 
 } // namespace Mapping
 

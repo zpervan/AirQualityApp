@@ -14,10 +14,16 @@
 #include <thread>
 
 // Forward declarations
+
+void ProcessNitrogenDioxide();
+void ProcessSulfurDioxide();
 void ProcessCarbonMonoxide();
 void ProcessBenzene();
 void ProcessOzone();
+void ProcessTemperature();
 std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values);
+
+// Function definitions
 
 void ProcessData() {
   while (true) {
@@ -28,39 +34,111 @@ void ProcessData() {
     }
 
     std::cout << "Processing data...\n";
-    Utility::sAirMeasurementFetcher->SetDate(Date::current_date, Date::current_date);
+    Utility::sAirMeasurementFetcher->SetDate(Date::current_date,
+                                             Date::current_date);
 
-    if (Config::Window::enable_carbon_monoxide)
+    if (Config::Window::show_nitrogen_dioxide)
+      ProcessNitrogenDioxide();
+    if (Config::Window::show_sulfur_dioxide)
+      ProcessSulfurDioxide();
+    if (Config::Window::show_carbon_monoxide)
       ProcessCarbonMonoxide();
-    if (Config::Window::enable_benzene)
+    if (Config::Window::show_benzene)
       ProcessBenzene();
-    if (Config::Window::enable_ozone)
+    if (Config::Window::show_ozone)
       ProcessOzone();
+    if (Config::Window::show_temperature)
+      ProcessTemperature();
 
     std::cout << "Processing DONE!\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
   }
 }
 
-// Forward declarations
+// Forward declarations of helper functions
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
                         const Mapping::Pollutant &pollutant);
+std::optional<std::string>
+FetchDataForPollutant(const Mapping::Pollutant &pollutant);
+void ParseFetchedData(std::string &fetched_data);
 
-void ProcessCarbonMonoxide() {
+// Process function definitions
+void ProcessNitrogenDioxide() {
+  std::cout << "Processing Nitrogen Dioxide [NO2] data...\n";
 
-  std::cout << "Processing CO data...\n";
+  const Mapping::Pollutant nitrogen_dioxide_pollutant =
+      Mapping::Pollutant::NITROGEN_DIOXIDE;
 
-  Utility::sAirMeasurementFetcher->SetPollutant(
-      Mapping::Pollutant::CARBON_MONOXIDE);
-  Utility::sAirMeasurementFetcher->FetchData();
-  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
+  auto fetched_data = FetchDataForPollutant(nitrogen_dioxide_pollutant);
 
-  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::CARBON_MONOXIDE)) {
+  if (IsFetchedDataEmpty(fetched_data, nitrogen_dioxide_pollutant)) {
     return;
   }
 
-  Utility::sJsonParser->ReadData(std::move(fetched_data->data()));
-  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+  ParseFetchedData(fetched_data.value());
+
+  Pollutants::nitrogen_dioxide_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
+  Pollutants::nitrogen_dioxide_values.resize(0);
+
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Pollutants::nitrogen_dioxide_values.emplace_back(
+        air_quality_measurement.value);
+  }
+
+  Config::Plot::nitrogen_dioxide_minmax_scaling =
+      CalculateMinMaxPlotScaling(Pollutants::nitrogen_dioxide_values);
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing Nitrogen Dioxide [NO2] data DONE!\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
+
+void ProcessSulfurDioxide() {
+  std::cout << "Processing Sulfur Dioxide [SO2] data...\n";
+
+  const Mapping::Pollutant sulfur_dioxide_pollutant =
+      Mapping::Pollutant::SULFUR_DIOXIDE;
+
+  auto fetched_data = FetchDataForPollutant(sulfur_dioxide_pollutant);
+
+  if (IsFetchedDataEmpty(fetched_data, sulfur_dioxide_pollutant)) {
+    return;
+  }
+
+  ParseFetchedData(fetched_data.value());
+
+  Pollutants::sulfur_dioxide_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
+  Pollutants::sulfur_dioxide_values.resize(0);
+
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Pollutants::sulfur_dioxide_values.emplace_back(
+        air_quality_measurement.value);
+  }
+
+  Config::Plot::sulfur_dioxide_minmax_scaling =
+      CalculateMinMaxPlotScaling(Pollutants::sulfur_dioxide_values);
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing Sulfur Dioxide [SO2] data DONE!\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
+
+void ProcessCarbonMonoxide() {
+
+  std::cout << "Processing Carbon Monoxide [CO] data...\n";
+
+  const Mapping::Pollutant carbon_monoxide =
+      Mapping::Pollutant::CARBON_MONOXIDE;
+
+  auto fetched_data = FetchDataForPollutant(carbon_monoxide);
+
+  if (IsFetchedDataEmpty(fetched_data, carbon_monoxide)) {
+    return;
+  }
+
+  ParseFetchedData(fetched_data.value());
 
   Pollutants::carbon_monoxide_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
@@ -75,23 +153,22 @@ void ProcessCarbonMonoxide() {
       CalculateMinMaxPlotScaling(Pollutants::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
-  std::cout << "Processing CO data DONE!\n";
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-};
+  std::cout << "Processing Carbon Monoxide [CO] data DONE!\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
 
 void ProcessBenzene() {
   std::cout << "Processing Benzene data...\n";
 
-  Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::BENZENE);
-  Utility::sAirMeasurementFetcher->FetchData();
-  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
+  const Mapping::Pollutant benzene_pollutant = Mapping::Pollutant::BENZENE;
 
-  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::BENZENE)) {
+  auto fetched_data = FetchDataForPollutant(benzene_pollutant);
+
+  if (IsFetchedDataEmpty(fetched_data, benzene_pollutant)) {
     return;
   }
 
-  Utility::sJsonParser->ReadData(fetched_data->data());
-  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+  ParseFetchedData(fetched_data.value());
 
   Pollutants::benzene_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
@@ -106,26 +183,25 @@ void ProcessBenzene() {
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Benzene data DONE!\n";
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }
 
 void ProcessOzone() {
   std::cout << "Processing Ozone data...\n";
 
-  Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::OZONE);
-  Utility::sAirMeasurementFetcher->FetchData();
-  auto fetched_data = Utility::sAirMeasurementFetcher->TryGetFetchedData();
+  const Mapping::Pollutant ozone_pollutant = Mapping::Pollutant::OZONE;
 
-  if (IsFetchedDataEmpty(fetched_data, Mapping::Pollutant::OZONE)) {
+  auto fetched_data = FetchDataForPollutant(ozone_pollutant);
+
+  if (IsFetchedDataEmpty(fetched_data, ozone_pollutant)) {
     return;
   }
 
-  Utility::sJsonParser->ReadData(fetched_data->data());
-  Utility::air_quality_measurements = Utility::sJsonParser->Parse().value();
+  ParseFetchedData(fetched_data.value());
 
-  Pollutants::ozone_values.resize(0);
   Pollutants::ozone_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+  Pollutants::ozone_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::ozone_values.emplace_back(air_quality_measurement.value);
@@ -136,7 +212,36 @@ void ProcessOzone() {
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Ozone data DONE!\n";
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
+
+void ProcessTemperature() {
+  std::cout << "Processing Temperature [°C] data...\n";
+
+  const Mapping::Pollutant temperature_flag = Mapping::Pollutant::TEMPERATURE;
+
+  auto fetched_data = FetchDataForPollutant(temperature_flag);
+
+  if (IsFetchedDataEmpty(fetched_data, temperature_flag)) {
+    return;
+  }
+
+  ParseFetchedData(fetched_data.value());
+
+  Pollutants::temperature_last_fetch =
+      Utility::air_quality_measurements.back().standard_time;
+  Pollutants::temperature_values.resize(0);
+
+  for (auto &air_quality_measurement : Utility::air_quality_measurements) {
+    Pollutants::temperature_values.emplace_back(air_quality_measurement.value);
+  }
+
+  Config::Plot::temperature_minmax_scaling =
+      CalculateMinMaxPlotScaling(Pollutants::sulfur_dioxide_values);
+
+  Utility::air_quality_measurements.resize(0);
+  std::cout << "Processing Temperature [°C] data DONE!\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }
 
 std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
@@ -157,12 +262,18 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values) {
 
 std::string PollutantAsString(const Mapping::Pollutant &pollutant) {
   switch (pollutant) {
+  case Mapping::Pollutant::NITROGEN_DIOXIDE:
+    return "Nitrogen Dioxide";
+  case Mapping::Pollutant::SULFUR_DIOXIDE:
+    return "Sulfur Dioxide";
   case Mapping::Pollutant::CARBON_MONOXIDE:
     return "Carbon Monoxide";
   case Mapping::Pollutant::BENZENE:
     return "Benzene";
   case Mapping::Pollutant::OZONE:
     return "Ozone";
+  case Mapping::Pollutant::TEMPERATURE:
+    return "Temperature";
   default:
     return "Unknown";
   }
@@ -170,13 +281,31 @@ std::string PollutantAsString(const Mapping::Pollutant &pollutant) {
 
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
                         const Mapping::Pollutant &pollutant) {
-
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);
-    std::cerr << "Fetched " + pollutant_string + " data is empty!\n";
+    const std::string error_message =
+        pollutant_string + " data empty! Check if API data available";
+
+    std::cerr << error_message << "\n";
+
+    Pollutants::temperature_last_fetch = error_message;
+
     return true;
   }
   return false;
+}
+
+std::optional<std::string>
+FetchDataForPollutant(const Mapping::Pollutant &pollutant) {
+  Utility::sAirMeasurementFetcher->SetPollutant(pollutant);
+  Utility::sAirMeasurementFetcher->FetchData();
+  return Utility::sAirMeasurementFetcher->TryGetFetchedData();
+}
+
+void ParseFetchedData(std::string &fetched_data) {
+  Utility::sJsonParser->ReadData(std::move(fetched_data.data()));
+  Utility::air_quality_measurements =
+      std::move(Utility::sJsonParser->Parse().value());
 }
 
 #endif // AIRQUALITYAPP_PROCESS_DATA_H

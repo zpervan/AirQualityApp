@@ -20,22 +20,29 @@ static bool exit_application{false};
 static bool show_about_window{false};
 
 static std::pair<uint16_t, uint16_t> main_window_size{1280, 720};
-static ImVec2 widget_window_size{200.f, 300.f};
+static ImVec2 data_window_size{200.f, 300.f};
+static ImVec2 plot_window_size{450.f, 120.f};
 
 static ImGuiComboFlags combo_flags = ImGuiComboFlags_None;
 static std::size_t date_range = 30;
 
-static bool enable_carbon_monoxide{true};
-static bool enable_benzene{true};
-static bool enable_ozone{true};
+static bool show_carbon_monoxide{true};
+static bool show_benzene{true};
+static bool show_ozone{true};
+static bool show_sulfur_dioxide{true};
+static bool show_nitrogen_dioxide{true};
+static bool show_temperature{false};
 
 } // namespace Window
 
 namespace Plot {
 
+static std::pair<float, float> nitrogen_dioxide_minmax_scaling{0.f, 1.f};
+static std::pair<float, float> sulfur_dioxide_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> carbon_monoxide_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> benzene_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> ozone_minmax_scaling{0.f, 1.f};
+static std::pair<float, float> temperature_minmax_scaling{0.f, 1.f};
 
 } // namespace Plot
 

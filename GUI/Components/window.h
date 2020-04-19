@@ -23,6 +23,9 @@ void ShowHistograms();
 void ShowCarbonMonoxide();
 void ShowBenzene();
 void ShowOzone();
+void ShowSulfurDioxide();
+void ShowNitrogenDioxide();
+void ShowTemperature();
 void ShowDateComboBox();
 void ShowAboutWindow();
 
@@ -35,22 +38,27 @@ static void ShowWindow() {
 }
 
 void ShowDataMenu() {
+
   ImGui::Begin("Data");
+  ImGui::SetWindowSize(Config::Window::data_window_size);
 
-  ImGui::SetWindowSize(Config::Window::widget_window_size);
-
-  ImGui::Checkbox("Fetch data?",
-                  &Config::DataFetch::enable_air_measurement_fetching);
+  ImGui::Text("City: Osijek, Croatia");
+  ImGui::Checkbox("Fetch data?", &Config::DataFetch::enable_air_measurement_fetching);
 
   if (Config::DataFetch::enable_air_measurement_fetching) {
     ShowDateComboBox();
   }
 
+  ImGui::Separator();
+
   ImGui::Text("Select data to visualize:");
-  ImGui::Checkbox(" Carbon Monoxide (CO)",
-                  &Config::Window::enable_carbon_monoxide);
-  ImGui::Checkbox(" Benzene", &Config::Window::enable_benzene);
-  ImGui::Checkbox(" Ozone (O3)", &Config::Window::enable_ozone);
+
+  ImGui::Checkbox(" Carbon Monoxide [CO]", &Config::Window::show_carbon_monoxide);
+  ImGui::Checkbox(" Benzene [C6H6]", &Config::Window::show_benzene);
+  ImGui::Checkbox(" Ozone [O3]", &Config::Window::show_ozone);
+  ImGui::Checkbox(" Sulfur Dioxide [SO2]", &Config::Window::show_sulfur_dioxide);
+  ImGui::Checkbox(" Nitrogen Dioxide [NO2]", &Config::Window::show_nitrogen_dioxide);
+  ImGui::Checkbox(" Temperature [°C]", &Config::Window::show_temperature);
 
   ImGui::End();
 }
@@ -80,24 +88,70 @@ void ShowDateComboBox() {
 }
 
 void ShowHistograms() {
-  if (Config::Window::enable_carbon_monoxide)
+  if (Config::Window::show_nitrogen_dioxide)
+    ShowNitrogenDioxide();
+
+  if (Config::Window::show_sulfur_dioxide)
+    ShowSulfurDioxide();
+
+  if (Config::Window::show_carbon_monoxide)
     ShowCarbonMonoxide();
-  if (Config::Window::enable_benzene)
+
+  if (Config::Window::show_benzene)
     ShowBenzene();
-  if (Config::Window::enable_ozone)
+
+  if (Config::Window::show_ozone)
     ShowOzone();
+
+  if (Config::Window::show_temperature)
+    ShowTemperature();
+}
+
+void ShowNitrogenDioxide() {
+  ImGui::SetNextWindowPos(ImVec2(280, 220), ImGuiCond_FirstUseEver);
+
+  ImGui::Begin("Nitrogen Dioxide [NO2]", &Config::Window::show_nitrogen_dioxide);
+
+  ImGui::PlotHistogram("", Pollutants::nitrogen_dioxide_values.data(),
+      Pollutants::nitrogen_dioxide_values.size(), 1.f, nullptr,
+      Config::Plot::nitrogen_dioxide_minmax_scaling.first,
+      Config::Plot::nitrogen_dioxide_minmax_scaling.second,
+      Config::Window::plot_window_size);
+
+  ImGui::Text("%s",
+      (Utility::last_fetch + Pollutants::nitrogen_dioxide_last_fetch).c_str());
+
+  ImGui::End();
+}
+
+void ShowSulfurDioxide() {
+  ImGui::SetNextWindowPos(ImVec2(280, 20), ImGuiCond_FirstUseEver);
+
+  ImGui::Begin("Sulfur Dioxide [SO2]", &Config::Window::show_sulfur_dioxide);
+
+  ImGui::PlotHistogram("", Pollutants::sulfur_dioxide_values.data(),
+      Pollutants::sulfur_dioxide_values.size(), 1.f, nullptr,
+      Config::Plot::sulfur_dioxide_minmax_scaling.first,
+      Config::Plot::sulfur_dioxide_minmax_scaling.second,
+      Config::Window::plot_window_size);
+
+  ImGui::Text("%s",
+      (Utility::last_fetch + Pollutants::sulfur_dioxide_last_fetch).c_str());
+
+  ImGui::End();
 }
 
 void ShowCarbonMonoxide() {
-  ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(750, 20), ImGuiCond_FirstUseEver);
 
-  ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
+  ImGui::Begin("Carbon Monoxide [CO]", &Config::Window::show_carbon_monoxide);
 
-  ImGui::PlotHistogram(
-      "", Pollutants::carbon_monoxide_values.data(),
-      Pollutants::carbon_monoxide_values.size(), 100.f, nullptr,
-      Config::Plot::carbon_monoxide_minmax_scaling.first,
-      Config::Plot::carbon_monoxide_minmax_scaling.second, ImVec2(350, 120));
+  ImGui::PlotHistogram("", Pollutants::carbon_monoxide_values.data(),
+                       Pollutants::carbon_monoxide_values.size(), 100.f,
+                       nullptr,
+                       Config::Plot::carbon_monoxide_minmax_scaling.first,
+                       Config::Plot::carbon_monoxide_minmax_scaling.second,
+                       Config::Window::plot_window_size);
 
   ImGui::Text(
       "%s",
@@ -107,14 +161,15 @@ void ShowCarbonMonoxide() {
 }
 
 void ShowBenzene() {
-  ImGui::SetNextWindowPos(ImVec2(650, 220), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(750, 220), ImGuiCond_FirstUseEver);
 
-  ImGui::Begin("Benzene", &Config::Window::enable_benzene);
+  ImGui::Begin("Benzene [C6H6]", &Config::Window::show_benzene);
 
-  ImGui::PlotHistogram(
-      "", Pollutants::benzene_values.data(), Pollutants::benzene_values.size(),
-      1.f, nullptr, Config::Plot::benzene_minmax_scaling.first,
-      Config::Plot::benzene_minmax_scaling.second, ImVec2(350, 120));
+  ImGui::PlotHistogram("", Pollutants::benzene_values.data(),
+                       Pollutants::benzene_values.size(), 1.f, nullptr,
+                       Config::Plot::benzene_minmax_scaling.first,
+                       Config::Plot::benzene_minmax_scaling.second,
+                       Config::Window::plot_window_size);
 
   ImGui::Text("%s",
               (Utility::last_fetch + Pollutants::benzene_last_fetch).c_str());
@@ -123,17 +178,35 @@ void ShowBenzene() {
 }
 
 void ShowOzone() {
-  ImGui::SetNextWindowPos(ImVec2(650, 420), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(750, 420), ImGuiCond_FirstUseEver);
 
-  ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
+  ImGui::Begin("Ozone [O3]", &Config::Window::show_ozone);
 
-  ImGui::PlotHistogram(
-      "", Pollutants::ozone_values.data(), Pollutants::ozone_values.size(), 1.f,
-      nullptr, Config::Plot::ozone_minmax_scaling.first,
-      Config::Plot::ozone_minmax_scaling.second, ImVec2(350, 120));
+  ImGui::PlotHistogram("", Pollutants::ozone_values.data(),
+                       Pollutants::ozone_values.size(), 1.f, nullptr,
+                       Config::Plot::ozone_minmax_scaling.first,
+                       Config::Plot::ozone_minmax_scaling.second,
+                       Config::Window::plot_window_size);
 
   ImGui::Text("%s",
               (Utility::last_fetch + Pollutants::ozone_last_fetch).c_str());
+
+  ImGui::End();
+}
+
+void ShowTemperature() {
+  ImGui::SetNextWindowPos(ImVec2(280, 420), ImGuiCond_FirstUseEver);
+
+  ImGui::Begin("Temperature [°C]", &Config::Window::show_temperature);
+
+  ImGui::PlotHistogram("", Pollutants::temperature_values.data(),
+      Pollutants::temperature_values.size(), 1.f, nullptr,
+      Config::Plot::temperature_minmax_scaling.first,
+      Config::Plot::temperature_minmax_scaling.second,
+      Config::Window::plot_window_size);
+
+  ImGui::Text("%s",
+      (Utility::last_fetch + Pollutants::temperature_last_fetch).c_str());
 
   ImGui::End();
 }
