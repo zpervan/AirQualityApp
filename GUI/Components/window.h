@@ -88,7 +88,7 @@ void ShowCarbonMonoxide() {
   ImGui::Begin("Carbon Monoxide - CO", &Config::Window::enable_carbon_monoxide);
 
   ImGui::PlotHistogram(
-      "Histogram", Pollutants::carbon_monoxide_values.data(),
+      "", Pollutants::carbon_monoxide_values.data(),
       Pollutants::carbon_monoxide_values.size(), 100.f, nullptr,
       Config::Plot::carbon_monoxide_minmax_scaling.first,
       Config::Plot::carbon_monoxide_minmax_scaling.second, ImVec2(350, 120));
@@ -105,7 +105,7 @@ void ShowBenzene() {
 
   ImGui::Begin("Benzene", &Config::Window::enable_benzene);
 
-  ImGui::PlotHistogram("Histogram", Pollutants::benzene_values.data(),
+  ImGui::PlotHistogram("", Pollutants::benzene_values.data(),
                        Pollutants::benzene_values.size(), 1.f, nullptr,
                        Config::Plot::benzene_minmax_scaling.first,
                        Config::Plot::benzene_minmax_scaling.second,
@@ -122,7 +122,7 @@ void ShowOzone() {
 
   ImGui::Begin("Ozone - O3", &Config::Window::enable_ozone);
 
-  ImGui::PlotHistogram("Histogram", Pollutants::ozone_values.data(),
+  ImGui::PlotHistogram("", Pollutants::ozone_values.data(),
                        Pollutants::ozone_values.size(), 1.f, nullptr,
                        Config::Plot::ozone_minmax_scaling.first,
                        Config::Plot::ozone_minmax_scaling.second,

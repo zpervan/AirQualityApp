@@ -8,11 +8,13 @@ os:
   - linux
 
 before install:
-  - sudo chmod 755 Scripts/install.sh Scripts/run_tests.sh
+  - sudo chmod 755 Scripts/install.sh
+  - sudo chmod 755 Scripts/build_and_run.sh
 
 install:
   - sudo ./Scripts/install.sh
 
 script:
-  - mkdir build && cd build && cmake .. && make
-  - cd .. && ./Scripts/run_tests.sh
+  - cd Scripts/
+  - ./build_and_run.sh
+  - ./build_and_run.sh -t
