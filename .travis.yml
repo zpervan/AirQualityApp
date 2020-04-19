@@ -16,5 +16,5 @@ install:
 
 script:
   - cd Scripts/
-  - ./build_and_run.sh
+  - ./build_and_run.sh -b
   - ./build_and_run.sh -t
