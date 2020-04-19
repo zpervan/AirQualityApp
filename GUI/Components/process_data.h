@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <numeric>
 #include <thread>
 
 // Forward declarations
@@ -50,7 +51,7 @@ void ProcessData() {
     if (Config::Window::show_temperature)
       ProcessTemperature();
 
-    std::cout << "Processing DONE!\n";
+    std::cout << "Processing DONE!\n" << std::flush;
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
   }
 }
@@ -61,6 +62,8 @@ bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
 std::optional<std::string>
 FetchDataForPollutant(const Mapping::Pollutant &pollutant);
 void ParseFetchedData(std::string &fetched_data);
+std::vector<float>
+CalculateLinearRegression(const std::vector<float> &y_values);
 
 // Process function definitions
 void ProcessNitrogenDioxide() {
@@ -79,7 +82,9 @@ void ProcessNitrogenDioxide() {
 
   Pollutants::nitrogen_dioxide_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::nitrogen_dioxide_values.resize(0);
+  Pollutants::lg_nitrogen_dioxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::nitrogen_dioxide_values.emplace_back(
@@ -88,6 +93,9 @@ void ProcessNitrogenDioxide() {
 
   Config::Plot::nitrogen_dioxide_minmax_scaling =
       CalculateMinMaxPlotScaling(Pollutants::nitrogen_dioxide_values);
+
+  Pollutants::lg_nitrogen_dioxide_values =
+      CalculateLinearRegression(Pollutants::nitrogen_dioxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Nitrogen Dioxide [NO2] data DONE!\n";
@@ -110,7 +118,9 @@ void ProcessSulfurDioxide() {
 
   Pollutants::sulfur_dioxide_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::sulfur_dioxide_values.resize(0);
+  Pollutants::lg_sulfur_dioxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::sulfur_dioxide_values.emplace_back(
@@ -119,6 +129,9 @@ void ProcessSulfurDioxide() {
 
   Config::Plot::sulfur_dioxide_minmax_scaling =
       CalculateMinMaxPlotScaling(Pollutants::sulfur_dioxide_values);
+
+  Pollutants::lg_sulfur_dioxide_values =
+      CalculateLinearRegression(Pollutants::sulfur_dioxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Sulfur Dioxide [SO2] data DONE!\n";
@@ -142,7 +155,9 @@ void ProcessCarbonMonoxide() {
 
   Pollutants::carbon_monoxide_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::carbon_monoxide_values.resize(0);
+  Pollutants::lg_carbon_monoxide_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::carbon_monoxide_values.emplace_back(
@@ -151,6 +166,9 @@ void ProcessCarbonMonoxide() {
 
   Config::Plot::carbon_monoxide_minmax_scaling =
       CalculateMinMaxPlotScaling(Pollutants::carbon_monoxide_values);
+
+  Pollutants::lg_carbon_monoxide_values =
+      CalculateLinearRegression(Pollutants::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Carbon Monoxide [CO] data DONE!\n";
@@ -172,7 +190,9 @@ void ProcessBenzene() {
 
   Pollutants::benzene_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::benzene_values.resize(0);
+  Pollutants::lg_benzene_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::benzene_values.emplace_back(air_quality_measurement.value);
@@ -180,6 +200,9 @@ void ProcessBenzene() {
 
   Config::Plot::benzene_minmax_scaling =
       CalculateMinMaxPlotScaling(Pollutants::benzene_values);
+
+  Pollutants::lg_benzene_values =
+      CalculateLinearRegression(Pollutants::benzene_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Benzene data DONE!\n";
@@ -201,7 +224,9 @@ void ProcessOzone() {
 
   Pollutants::ozone_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::ozone_values.resize(0);
+  Pollutants::lg_ozone_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::ozone_values.emplace_back(air_quality_measurement.value);
@@ -209,6 +234,9 @@ void ProcessOzone() {
 
   Config::Plot::ozone_minmax_scaling =
       CalculateMinMaxPlotScaling(Pollutants::ozone_values);
+
+  Pollutants::lg_ozone_values =
+      CalculateLinearRegression(Pollutants::ozone_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Ozone data DONE!\n";
@@ -230,14 +258,19 @@ void ProcessTemperature() {
 
   Pollutants::temperature_last_fetch =
       Utility::air_quality_measurements.back().standard_time;
+
   Pollutants::temperature_values.resize(0);
+  Pollutants::lg_temperature_values.resize(0);
 
   for (auto &air_quality_measurement : Utility::air_quality_measurements) {
     Pollutants::temperature_values.emplace_back(air_quality_measurement.value);
   }
 
   Config::Plot::temperature_minmax_scaling =
-      CalculateMinMaxPlotScaling(Pollutants::sulfur_dioxide_values);
+      CalculateMinMaxPlotScaling(Pollutants::temperature_values);
+
+  Pollutants::lg_temperature_values =
+      CalculateLinearRegression(Pollutants::temperature_values);
 
   Utility::air_quality_measurements.resize(0);
   std::cout << "Processing Temperature [°C] data DONE!\n";
@@ -286,7 +319,7 @@ bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
     const std::string error_message =
         pollutant_string + " data empty! Check if API data available";
 
-    std::cerr << error_message << "\n";
+    std::cerr << error_message << std::endl;
 
     Pollutants::temperature_last_fetch = error_message;
 
@@ -308,4 +341,16 @@ void ParseFetchedData(std::string &fetched_data) {
       std::move(Utility::sJsonParser->Parse().value());
 }
 
+std::vector<float>
+CalculateLinearRegression(const std::vector<float> &y_values) {
+
+  std::vector<float> x_values(y_values.size());
+  std::iota(x_values.begin(), x_values.end(), 0);
+
+  Utility::sLinearRegression->SetXValues(x_values);
+  Utility::sLinearRegression->SetYValues(y_values);
+  Utility::sLinearRegression->CalculateLeastSquareRegressionCoeffs();
+
+  return Utility::sLinearRegression->CalculateLeastSquareRegression(x_values);
+}
 #endif // AIRQUALITYAPP_PROCESS_DATA_H

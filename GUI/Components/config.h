@@ -5,8 +5,6 @@
 #ifndef AIRQUALITYAPP_CONFIG_H
 #define AIRQUALITYAPP_CONFIG_H
 
-#include "../Utility/AirMeasurementFetcher/air_measurement_fetcher.h"
-#include "../Utility/JsonParser/json_parser.h"
 #include "../Utility/ThirdParty/DearImgui/imgui.h"
 
 #include <memory>
@@ -19,9 +17,9 @@ namespace Window {
 static bool exit_application{false};
 static bool show_about_window{false};
 
-static std::pair<uint16_t, uint16_t> main_window_size{1280, 720};
-static ImVec2 data_window_size{200.f, 300.f};
-static ImVec2 plot_window_size{450.f, 120.f};
+static std::pair<uint16_t, uint16_t> main_window_size{1400, 720};
+static ImVec2 data_window_size{200.f, 280.f};
+static ImVec2 plot_window_size{450.f, 60.f};
 
 static ImGuiComboFlags combo_flags = ImGuiComboFlags_None;
 static std::size_t date_range = 30;
@@ -43,6 +41,8 @@ static std::pair<float, float> carbon_monoxide_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> benzene_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> ozone_minmax_scaling{0.f, 1.f};
 static std::pair<float, float> temperature_minmax_scaling{0.f, 1.f};
+static std::string text_overlay;
+static int value_offset = 0;
 
 } // namespace Plot
 

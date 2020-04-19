@@ -2,6 +2,12 @@
 // Project: Air Quality in Croatia
 // Student: Zvonimir Pervan
 
+/******************************************************************************/
+/** Least square regression:                                                 **/
+/**        https://www.mathsisfun.com/data/least-squares-regression.html     **/
+/******************************************************************************/
+
+
 #ifndef LINEAR_REGRESSION_UTILS_H
 #define LINEAR_REGRESSION_UTILS_H
 
@@ -31,6 +37,8 @@ public:
   LinearRegression() = default;
 
 private:
+  void ClearData();
+  void SumValues(const std::vector<float>& values, float &sum_value);
   std::vector<float> x_values_{};
   std::vector<float> y_values_{};
   std::vector<float> squared_values_{};

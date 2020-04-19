@@ -3,6 +3,7 @@
 // Student: Zvonimir Pervan
 
 #include "linear_regression.h"
+
 #include <algorithm>
 #include <cmath>
 #include <numeric>
@@ -34,6 +35,7 @@ std::vector<float> LinearRegression::CalculateLeastSquareRegression(
       x_values.begin(), x_values.end(), std::back_inserter(calculated_values),
       [&](const float x_value) { return slope_ * x_value + intercept_; });
 
+  ClearData();
   return calculated_values;
 }
 
@@ -53,27 +55,42 @@ void LinearRegression::CalculateXSquaredValues() {
 void LinearRegression::CalculateXYProducts() {
   product_values_.reserve(x_values_.size());
   std::transform(x_values_.begin(), x_values_.end(), y_values_.begin(),
-                 std::back_inserter(product_values_),
-                 std::multiplies<>());
+                 std::back_inserter(product_values_), std::multiplies<float>());
 }
 
 void LinearRegression::CalculateSums() {
-  sum_x_value_ = std::accumulate(x_values_.begin(), x_values_.end(), 0);
-  sum_y_value_ = std::accumulate(y_values_.begin(), y_values_.end(), 0);
-  sum_squared_value_ =
-      std::accumulate(squared_values_.begin(), squared_values_.end(), 0);
-  sum_product_value_ =
-      std::accumulate(product_values_.begin(), product_values_.end(), 0);
+  SumValues(x_values_, sum_x_value_);
+  SumValues(y_values_, sum_y_value_);
+  SumValues(squared_values_, sum_squared_value_);
+  SumValues(product_values_, sum_product_value_);
+}
+
+void LinearRegression::SumValues(const std::vector<float> &values,
+                                 float &sum_value) {
+  std::for_each(values.begin(), values.end(), [&](float n) { sum_value += n; });
 }
 
 void LinearRegression::CalculateSlope() {
   slope_ =
-      (data_value_count_ * sum_product_value_ - (sum_x_value_ * sum_y_value_)) /
-      (data_value_count_ * sum_squared_value_ - std::pow(sum_x_value_, 2));
+      ((data_value_count_ * sum_product_value_) - (sum_x_value_ * sum_y_value_)) /
+      ((data_value_count_ * sum_squared_value_) - std::pow(sum_x_value_, 2));
 }
 
 void LinearRegression::CalculateIntercept() {
-  intercept_ = (sum_y_value_ - slope_ * sum_x_value_) / data_value_count_;
+  intercept_ = (sum_y_value_ - (slope_ * sum_x_value_)) / data_value_count_;
+}
+
+void LinearRegression::ClearData() {
+  squared_values_.resize(0);
+  product_values_.resize(0);
+
+  data_value_count_ = 0;
+  sum_x_value_ = 0;
+  sum_y_value_ = 0;
+  sum_squared_value_ = 0;
+  sum_product_value_ = 0;
+  slope_ = 0;
+  intercept_ = 0;
 }
 
 const std::vector<float> &LinearRegression::GetXValues() const {

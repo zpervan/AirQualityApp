@@ -23,5 +23,6 @@ target_link_libraries(AirQualityGui
         DearImGui
         DateTime
         JsonParser
+        LinearRegression
         pthread
         )
