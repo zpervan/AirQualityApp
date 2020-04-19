@@ -22,12 +22,12 @@ std::pair<float, float> CalculateMinMaxPlotScaling(std::vector<float> &values);
 void ProcessData() {
   while (true) {
     if (!Config::DataFetch::enable_air_measurement_fetching) {
-      std::cout << "Data fetching is disabled." << std::endl;
+      std::cout << "Data fetching is disabled.\n";
       std::this_thread::sleep_for(std::chrono::milliseconds(5000));
       continue;
     }
 
-    std::cout << "Processing data..." << std::endl;
+    std::cout << "Processing data...\n";
     Utility::sAirMeasurementFetcher->SetDate(Date::current_date, Date::current_date);
 
     if (Config::Window::enable_carbon_monoxide)
@@ -37,7 +37,7 @@ void ProcessData() {
     if (Config::Window::enable_ozone)
       ProcessOzone();
 
-    std::cout << "Processing DONE!" << std::endl;
+    std::cout << "Processing DONE!\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
   }
 }
@@ -48,7 +48,7 @@ bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
 
 void ProcessCarbonMonoxide() {
 
-  std::cout << "Processing CO data..." << std::endl;
+  std::cout << "Processing CO data...\n";
 
   Utility::sAirMeasurementFetcher->SetPollutant(
       Mapping::Pollutant::CARBON_MONOXIDE);
@@ -75,12 +75,12 @@ void ProcessCarbonMonoxide() {
       CalculateMinMaxPlotScaling(Pollutants::carbon_monoxide_values);
 
   Utility::air_quality_measurements.resize(0);
-  std::cout << "Processing CO data DONE!" << std::endl;
+  std::cout << "Processing CO data DONE!\n";
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
 };
 
 void ProcessBenzene() {
-  std::cout << "Processing Benzene data..." << std::endl;
+  std::cout << "Processing Benzene data...\n";
 
   Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::BENZENE);
   Utility::sAirMeasurementFetcher->FetchData();
@@ -105,12 +105,12 @@ void ProcessBenzene() {
       CalculateMinMaxPlotScaling(Pollutants::benzene_values);
 
   Utility::air_quality_measurements.resize(0);
-  std::cout << "Processing Benzene data DONE!" << std::endl;
+  std::cout << "Processing Benzene data DONE!\n";
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 void ProcessOzone() {
-  std::cout << "Processing Ozone data..." << std::endl;
+  std::cout << "Processing Ozone data...\n";
 
   Utility::sAirMeasurementFetcher->SetPollutant(Mapping::Pollutant::OZONE);
   Utility::sAirMeasurementFetcher->FetchData();
@@ -135,7 +135,7 @@ void ProcessOzone() {
       CalculateMinMaxPlotScaling(Pollutants::ozone_values);
 
   Utility::air_quality_measurements.resize(0);
-  std::cout << "Processing Ozone data DONE!" << std::endl;
+  std::cout << "Processing Ozone data DONE!\n";
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
@@ -173,7 +173,7 @@ bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
 
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);
-    std::cerr << "Fetched " + pollutant_string + " data is empty!" << std::endl;
+    std::cerr << "Fetched " + pollutant_string + " data is empty!\n";
     return true;
   }
   return false;

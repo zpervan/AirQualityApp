@@ -54,7 +54,7 @@ inline bool IsCustomDateNotSet(std::string &from, const std::string &to) {
 
 inline bool IsPollutantSet(Mapping::Pollutant pollutant) {
   if (pollutant == Mapping::Pollutant::UNKNOWN) {
-    std::cerr << "Pollutant unknown! Data will not fetched." << std::endl;
+    std::cerr << "Pollutant unknown! Data will not fetched.\n";
     return false;
   }
   return true;

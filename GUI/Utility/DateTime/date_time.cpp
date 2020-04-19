@@ -16,7 +16,7 @@ const std::size_t expected_epoch_data_size = 13;
 
 inline bool IsEpochDataValid(const std::string &epoch_time) {
   if (epoch_time.empty()) {
-    std::cerr << "Epoch time data is empty. Is the data fetched?" << std::endl;
+    std::cerr << "Epoch time data is empty. Is the data fetched?\n";
     return false;
   }
 
