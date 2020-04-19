@@ -6,6 +6,7 @@
 #define AIRQUALITYAPP_MAIN_MENU_BAR_H
 
 #include "../Utility/ThirdParty/DearImgui/imgui.h"
+#include "config.h"
 
 namespace Menu {
 static void ShowMainMenuBar() {
@@ -14,7 +15,8 @@ static void ShowMainMenuBar() {
       if (ImGui::MenuItem("About")) {
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("Exit")) {
+      if (ImGui::MenuItem("Exit", "Alt+F4")) {
+        Config::Window::exit_application = true;
       }
       ImGui::EndMenu();
     }

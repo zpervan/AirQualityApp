@@ -16,11 +16,13 @@ namespace Config {
 
 namespace Window {
 
+static bool exit_application{false};
+
 static std::pair<uint16_t, uint16_t> main_window_size{1280, 720};
 static ImVec2 widget_window_size{200.f, 300.f};
 
 static ImGuiComboFlags combo_flags = ImGuiComboFlags_None;
-static std::size_t date_range = 10;
+static std::size_t date_range = 30;
 
 static bool enable_carbon_monoxide{false};
 static bool enable_benzene{false};

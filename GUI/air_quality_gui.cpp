@@ -78,7 +78,7 @@ int AirQualityGui::Run() {
 
   std::thread process_data = std::thread(ProcessData);
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window) && !Config::Window::exit_application) {
     glfwPollEvents();
 
     // Start the Dear ImGui frame
