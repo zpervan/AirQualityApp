@@ -8,30 +8,12 @@
 #include <numeric>
 #include <stdexcept>
 
-LinearRegression &
-LinearRegression::operator=(const LinearRegression &rhs) {
-  x_values_ = rhs.x_values_;
-  y_values_ = rhs.y_values_;
-  squared_values_ = rhs.squared_values_;
-  product_values_ = rhs.product_values_;
-
-  sum_x_value_ = rhs.sum_x_value_;
-  sum_y_value_ = rhs.sum_y_value_;
-  sum_squared_value_ = rhs.sum_squared_value_;
-  sum_product_value_ = rhs.sum_product_value_;
-
-  data_value_count_ = rhs.data_value_count_;
-
-  slope_ = rhs.slope_;
-  intercept_ = rhs.intercept_;
-
-  return *this;
+void LinearRegression::SetXValues(const std::vector<float> &x_values) {
+  x_values_ = x_values;
 }
 
-LinearRegression &
-LinearRegression::operator=(LinearRegression &&linear_regression) {
-  *this = linear_regression;
-  return *this;
+void LinearRegression::SetYValues(const std::vector<float> &y_values) {
+  y_values_ = y_values;
 }
 
 void LinearRegression::CalculateLeastSquareRegressionCoeffs() {
@@ -43,14 +25,14 @@ void LinearRegression::CalculateLeastSquareRegressionCoeffs() {
   CalculateIntercept();
 }
 
-std::vector<double> LinearRegression::CalculateLeastSquareRegression(
-    const std::vector<int> &x_values) {
-  std::vector<double> calculated_values;
+std::vector<float> LinearRegression::CalculateLeastSquareRegression(
+    const std::vector<float> &x_values) {
+  std::vector<float> calculated_values;
   calculated_values.reserve(x_values.size());
 
   std::transform(
       x_values.begin(), x_values.end(), std::back_inserter(calculated_values),
-      [&](const int x_value) { return slope_ * x_value + intercept_; });
+      [&](const float x_value) { return slope_ * x_value + intercept_; });
 
   return calculated_values;
 }
@@ -65,13 +47,14 @@ void LinearRegression::CalculateXSquaredValues() {
   squared_values_.reserve(x_values_.size());
   std::transform(x_values_.begin(), x_values_.end(),
                  std::back_inserter(squared_values_),
-                 [](const int x) { return std::pow(x, 2); });
+                 [](const float x) { return std::pow(x, 2); });
 }
 
 void LinearRegression::CalculateXYProducts() {
   product_values_.reserve(x_values_.size());
   std::transform(x_values_.begin(), x_values_.end(), y_values_.begin(),
-                 std::back_inserter(product_values_), std::multiplies<int>());
+                 std::back_inserter(product_values_),
+                 std::multiplies<>());
 }
 
 void LinearRegression::CalculateSums() {
@@ -93,30 +76,38 @@ void LinearRegression::CalculateIntercept() {
   intercept_ = (sum_y_value_ - slope_ * sum_x_value_) / data_value_count_;
 }
 
-const std::vector<int> &LinearRegression::GetXValues() const {
+const std::vector<float> &LinearRegression::GetXValues() const {
   return x_values_;
 }
 
-const std::vector<int> &LinearRegression::GetYValues() const {
+const std::vector<float> &LinearRegression::GetYValues() const {
   return y_values_;
 }
 
-const std::vector<int> &LinearRegression::GetSquaredValues() const {
+const std::vector<float> &LinearRegression::GetSquaredValues() const {
   return squared_values_;
 }
 
-const std::vector<int> &LinearRegression::GetProductValues() const {
+const std::vector<float> &LinearRegression::GetProductValues() const {
   return product_values_;
 }
 
-int LinearRegression::GetSumXValue() const { return sum_x_value_; }
+float LinearRegression::GetSumXValue() const { return sum_x_value_; }
 
-int LinearRegression::GetSumYValue() const { return sum_y_value_; }
+float LinearRegression::GetSumYValue() const { return sum_y_value_; }
 
-int LinearRegression::GetSumSquaredValue() const { return sum_squared_value_; }
+float LinearRegression::GetSumSquaredValue() const {
+  return sum_squared_value_;
+}
 
-int LinearRegression::GetSumProductValue() const { return sum_product_value_; }
+float LinearRegression::GetSumProductValue() const {
+  return sum_product_value_;
+}
 
-double LinearRegression::GetSlopeValue() const { return slope_; }
-int LinearRegression::GetDataValueCount() const { return data_value_count_; }
-double LinearRegression::GetIntercept() const { return intercept_; }
+float LinearRegression::GetSlopeValue() const { return slope_; }
+
+std::size_t LinearRegression::GetDataValueCount() const {
+  return data_value_count_;
+}
+
+float LinearRegression::GetIntercept() const { return intercept_; }

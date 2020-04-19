@@ -2,7 +2,6 @@
 // Project: Air Quality in Croatia
 // Student: Zvonimir Pervan
 
-// TODO: Implement exit functionality
 // TODO: Linear regression?
 
 #include "GUI/air_quality_gui.h"
