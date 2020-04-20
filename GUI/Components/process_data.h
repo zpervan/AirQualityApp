@@ -58,7 +58,8 @@ void ProcessData() {
 
 // Forward declarations of helper functions
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const Mapping::Pollutant &pollutant);
+                        const Mapping::Pollutant &pollutant,
+                        std::string &last_fetch);
 std::optional<std::string>
 FetchDataForPollutant(const Mapping::Pollutant &pollutant);
 void ParseFetchedData(std::string &fetched_data);
@@ -74,7 +75,8 @@ void ProcessNitrogenDioxide() {
 
   auto fetched_data = FetchDataForPollutant(nitrogen_dioxide_pollutant);
 
-  if (IsFetchedDataEmpty(fetched_data, nitrogen_dioxide_pollutant)) {
+  if (IsFetchedDataEmpty(fetched_data, nitrogen_dioxide_pollutant,
+                         Pollutants::nitrogen_dioxide_last_fetch)) {
     return;
   }
 
@@ -110,7 +112,8 @@ void ProcessSulfurDioxide() {
 
   auto fetched_data = FetchDataForPollutant(sulfur_dioxide_pollutant);
 
-  if (IsFetchedDataEmpty(fetched_data, sulfur_dioxide_pollutant)) {
+  if (IsFetchedDataEmpty(fetched_data, sulfur_dioxide_pollutant,
+                         Pollutants::sulfur_dioxide_last_fetch)) {
     return;
   }
 
@@ -147,7 +150,8 @@ void ProcessCarbonMonoxide() {
 
   auto fetched_data = FetchDataForPollutant(carbon_monoxide);
 
-  if (IsFetchedDataEmpty(fetched_data, carbon_monoxide)) {
+  if (IsFetchedDataEmpty(fetched_data, carbon_monoxide,
+                         Pollutants::carbon_monoxide_last_fetch)) {
     return;
   }
 
@@ -182,7 +186,8 @@ void ProcessBenzene() {
 
   auto fetched_data = FetchDataForPollutant(benzene_pollutant);
 
-  if (IsFetchedDataEmpty(fetched_data, benzene_pollutant)) {
+  if (IsFetchedDataEmpty(fetched_data, benzene_pollutant,
+                         Pollutants::benzene_last_fetch)) {
     return;
   }
 
@@ -216,7 +221,8 @@ void ProcessOzone() {
 
   auto fetched_data = FetchDataForPollutant(ozone_pollutant);
 
-  if (IsFetchedDataEmpty(fetched_data, ozone_pollutant)) {
+  if (IsFetchedDataEmpty(fetched_data, ozone_pollutant,
+                         Pollutants::ozone_last_fetch)) {
     return;
   }
 
@@ -250,7 +256,8 @@ void ProcessTemperature() {
 
   auto fetched_data = FetchDataForPollutant(temperature_flag);
 
-  if (IsFetchedDataEmpty(fetched_data, temperature_flag)) {
+  if (IsFetchedDataEmpty(fetched_data, temperature_flag,
+                         Pollutants::temperature_last_fetch)) {
     return;
   }
 
@@ -313,7 +320,8 @@ std::string PollutantAsString(const Mapping::Pollutant &pollutant) {
 }
 
 bool IsFetchedDataEmpty(const std::optional<std::string> &fetched_data,
-                        const Mapping::Pollutant &pollutant) {
+                        const Mapping::Pollutant &pollutant,
+                        std::string &last_fetch) {
   if (!fetched_data.has_value()) {
     const std::string pollutant_string = PollutantAsString(pollutant);
     const std::string error_message =
