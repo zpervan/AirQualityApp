@@ -84,6 +84,6 @@ case "$1" in
     "-c" | "--configure" ) configure_release;;
     "-b" | "--build" ) configure_and_build_release;;
     "-t" | "--test" ) run_tests;;
-    "-c" | "--clean" ) run_tests;;
+    "-c" | "--clean" ) clean_build;;
     *) run_application ;;
 esac
