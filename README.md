@@ -40,6 +40,7 @@ cd Scripts/
 ```
 ### Use
 
+The application works and was tested to build successfully on Ubuntu 18 and 19.
 To use this application, from the `Scripts` folder run the script `build_and_run.sh` without any arguments. This should configure, build and execute the application.
 Usage:
 * Position your terminal in the `AirQualityApp` folder,
